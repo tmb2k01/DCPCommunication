@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/lib/fmilib/shared/parser"
+            ],
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}
