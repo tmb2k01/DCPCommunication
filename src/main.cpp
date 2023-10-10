@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
     parseArguments(argc, argv, &fmuFileName, &tEnd, &h, &loggingOn, &csv_separator, &nCategories, &categories);
     loadFMU(fmuFileName);
 
-    // run the simulation
+  // run the simulation
     printf("FMU Simulator: run '%s' from t=0..%g with step size h=%g, loggingOn=%d, csv separator='%c' ",
             fmuFileName, tEnd, h, loggingOn, csv_separator);
     printf("log categories={ ");
@@ -166,7 +166,11 @@ int main(int argc, char *argv[]) {
     printf("CSV file '%s' written\n", RESULT_FILE);
 
     // release FMU
+#if WINDOWS
+    FreeLibrary(fmu.dllHandle);
+#else /* WINDOWS */
     dlclose(fmu.dllHandle);
+#endif /* WINDOWS */
     freeModelDescription(fmu.modelDescription);
     if (categories) free(categories);
 

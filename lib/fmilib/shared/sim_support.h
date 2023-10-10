@@ -57,6 +57,11 @@
 #define SEVEN_ZIP_COMMAND_LINE_ERROR 7
 #define SEVEN_ZIP_OUT_OF_MEMORY 8
 #define SEVEN_ZIP_STOPPED_BY_USER 255
+#define FMI_COSIMULATION
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void fmuLogger(fmi2Component c, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
 int unzip(const char *zipPath, const char *outPath);
@@ -69,3 +74,7 @@ void outputRow(FMU *fmu, fmi2Component c, double time, FILE* file, char separato
 int error(const char *message);
 void printHelp(const char *fmusim);
 char *getTempResourcesLocation(); // caller has to free the result
+
+#ifdef __cplusplus
+}
+#endif
