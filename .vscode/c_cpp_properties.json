@@ -3,7 +3,16 @@
         {
             "includePath": [
                 "${workspaceFolder}",
-                "${workspaceFolder}/lib/fmilib/shared/parser"
+                "${workspaceFolder}/lib/fmilib/shared/parser",
+                "${workspaceFolder}/lib/fmilib/shared",
+                "${workspaceFolder}/lib/fmi",
+                "${workspaceFolder}/lib/dcp/bluetooth",
+                "${workspaceFolder}/lib/dcp/core",
+                "${workspaceFolder}/lib/dcp/ethernet",
+                "${workspaceFolder}/lib/dcp/master",
+                "${workspaceFolder}/lib/dcp/slave",
+                "${workspaceFolder}/lib/dcp/xml",
+                "${workspaceFolder}/lib/dcp/zip"
             ],
             "intelliSenseMode": "linux-gcc-x64",
             "compilerPath": "/usr/bin/gcc",

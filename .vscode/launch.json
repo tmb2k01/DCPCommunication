@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug FMU Simulation",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/fmusim", // Assuming 'build' is a direct subfolder of your workspace
+            "args": [
+                "../models/Proxy.fmu",
+                "100",
+                "1"
+            ], // Arguments passed to the program
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build", // Current working directory is set to 'build'
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "", // If you have a build task, specify it here
+            "miDebuggerPath": "/usr/bin/gdb",
+            "logging": {
+                "trace": false,
+                "traceResponse": false,
+                "engineLogging": false,
+                "programOutput": true,
+                "exceptions": true
+            },
+            // ... other configurations for different platforms (windows, osx, etc.)
+        }
+    ]
+}

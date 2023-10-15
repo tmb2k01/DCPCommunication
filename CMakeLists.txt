@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(fmusim_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/bluetooth")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/core")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/ethernet")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/master")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/slave")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/xml")
+include_directories("${fmusim_SOURCE_DIR}/lib/dcp/zip")
 include_directories("${fmusim_SOURCE_DIR}/lib/fmi")
 include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared")
 include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/include")
@@ -16,6 +23,7 @@ include_directories("${fmusim_SOURCE_DIR}/src")
 
 file(GLOB SOURCES 
     "src/*.cpp" 
+    "lib/dcp/*.cpp" 
     "lib/fmilib/shared/*.c" 
     "lib/fmilib/shared/*.cpp"
     "lib/fmilib/shared/parser/*.c" 
@@ -27,6 +35,7 @@ file(GLOB SOURCES
     "lib/dcp/*.hpp")
 
 set(fmusim_CMAKE_DEFINITIONS 
+    -g
     -Wall 
     -Wextra
     -Wno-deprecated-declarations 

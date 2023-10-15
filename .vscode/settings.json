@@ -1,6 +1,9 @@
 {
+    "editor.formatOnSave": true,
     "files.associations": {
         "random": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp"
     }
 }
