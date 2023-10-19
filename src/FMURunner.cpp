@@ -14,6 +14,8 @@ FMURunner::FMURunner(const char *fmuFileName, double tEnd, double h,
 {
     loadFMU(fmuFileName);
     m_hh = m_h;
+    intVr = 0;
+    realVr = 0;
     inInt = 0;
     inReal = 0;
 }

@@ -49,9 +49,10 @@ add_definitions(-DLIBXML_STATIC)
 add_definitions(-DLIBXML_READER_ENABLED)
 
 find_package(LibXml2 REQUIRED)
-include_directories(${LIBXML2_INCLUDE_DIR})
+find_package(XercesC REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR} ${XercesC_INCLUDE_DIR})
 
 
 SET(EXECUTABLE_NAME ${PROJECT_NAME})
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
-target_link_libraries(${EXECUTABLE_NAME} ${LIBXML2_LIBRARIES} dl)
+target_link_libraries(${EXECUTABLE_NAME} ${LIBXML2_LIBRARIES} ${XercesC_LIBRARY} dl pthread)

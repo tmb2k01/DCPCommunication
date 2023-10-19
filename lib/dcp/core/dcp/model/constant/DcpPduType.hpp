@@ -11,14 +11,13 @@
 #define DCPLIB_DCPPDUTYPE_HPP
 
 #include <string>
-#if defined(DEBUG) || defined(LOGGING)
 #include <sstream>
-#endif
 
 /**
  * PDU types of the DCP
  */
-enum class DcpPduType : uint8_t {
+enum class DcpPduType : uint8_t
+{
     /**
      * A DCP master shall register a DCP slave to integrate it into a simulation scenario and use it for a simulation
      * task.
@@ -172,87 +171,87 @@ enum class DcpPduType : uint8_t {
      */
     DAT_parameter = 0xF1,
 
-
 };
 
-#if defined(DEBUG) || defined(LOGGING)
 /**
  * Adds an DcpPduType to an osstream in a human readable format.
  * @param str
  * @param type
  */
-static std::ostream &operator<<(std::ostream &os, DcpPduType type) {
-    switch (type) {
-        case DcpPduType::STC_configure:
-            return os << "STC_configure";
-        case DcpPduType::STC_prepare:
-            return os << "STC_prepare";
-        case DcpPduType::STC_initialize:
-            return os << "STC_initialize";
-        case DcpPduType::STC_run:
-            return os << "STC_run";
-        case DcpPduType::STC_do_step:
-            return os << "STC_do_step";
-        case DcpPduType::STC_send_outputs:
-            return os << "STC_send_outputs";
-        case DcpPduType::STC_stop:
-            return os << "STC_stop";
-        case DcpPduType::STC_reset:
-            return os << "STC_reset";
-        case DcpPduType::INF_state:
-            return os << "INF_state";
-        case DcpPduType::INF_error:
-            return os << "INF_error";
-        case DcpPduType::INF_log:
-            return os << "INF_log";
-        case DcpPduType::NTF_state_changed:
-            return os << "NTF_state_changed";
-        case DcpPduType::NTF_log:
-            return os << "NTF_log";
-        case DcpPduType::CFG_time_res:
-            return os << "CFG_time_res";
-        case DcpPduType::CFG_steps:
-            return os << "CFG_steps";
-        case DcpPduType::STC_register:
-            return os << "STC_register";
-        case DcpPduType::STC_deregister:
-            return os << "STC_deregister";
-        case DcpPduType::CFG_input:
-            return os << "CFG_input";
-        case DcpPduType::CFG_output:
-            return os << "CFG_output";
-        case DcpPduType::CFG_parameter:
-            return os << "CFG_parameter";
-        case DcpPduType::CFG_tunable_parameter:
-            return os << "CFGtunable_parameter";
-        case DcpPduType::CFG_param_network_information:
-            return os << "CFG_param_network_information";
-        case DcpPduType::CFG_clear:
-            return os << "CFG_clear";
-        case DcpPduType::CFG_logging:
-            return os << "CFG_logging";
-        case DcpPduType::DAT_input_output:
-            return os << "DAT_input_output";
-        case DcpPduType::DAT_parameter:
-            return os << "DAT_parameter";
-        case DcpPduType::RSP_ack:
-            return os << "RSP_ack";
-        case DcpPduType::RSP_nack:
-            return os << "RSP_nack";
-        case DcpPduType::RSP_state_ack:
-            return os << "RSP_state_ack";
-        case DcpPduType::RSP_error_ack:
-            return os << "RSP_error_ack";
-        case DcpPduType::RSP_log_ack:
-            return os << "RSP_log_ack";
-        case DcpPduType::CFG_target_network_information:
-            return os << "CFG_target_network_information";
-        case DcpPduType::CFG_source_network_information:
-            return os << "CFG_source_network_information";
-        case DcpPduType::CFG_scope:
-            return os << "CFG_scope";
-        default:
-            return os << "UNKNOWN(" << (unsigned((uint8_t) type)) << ")";
+static std::ostream &operator<<(std::ostream &os, DcpPduType type)
+{
+    switch (type)
+    {
+    case DcpPduType::STC_configure:
+        return os << "STC_configure";
+    case DcpPduType::STC_prepare:
+        return os << "STC_prepare";
+    case DcpPduType::STC_initialize:
+        return os << "STC_initialize";
+    case DcpPduType::STC_run:
+        return os << "STC_run";
+    case DcpPduType::STC_do_step:
+        return os << "STC_do_step";
+    case DcpPduType::STC_send_outputs:
+        return os << "STC_send_outputs";
+    case DcpPduType::STC_stop:
+        return os << "STC_stop";
+    case DcpPduType::STC_reset:
+        return os << "STC_reset";
+    case DcpPduType::INF_state:
+        return os << "INF_state";
+    case DcpPduType::INF_error:
+        return os << "INF_error";
+    case DcpPduType::INF_log:
+        return os << "INF_log";
+    case DcpPduType::NTF_state_changed:
+        return os << "NTF_state_changed";
+    case DcpPduType::NTF_log:
+        return os << "NTF_log";
+    case DcpPduType::CFG_time_res:
+        return os << "CFG_time_res";
+    case DcpPduType::CFG_steps:
+        return os << "CFG_steps";
+    case DcpPduType::STC_register:
+        return os << "STC_register";
+    case DcpPduType::STC_deregister:
+        return os << "STC_deregister";
+    case DcpPduType::CFG_input:
+        return os << "CFG_input";
+    case DcpPduType::CFG_output:
+        return os << "CFG_output";
+    case DcpPduType::CFG_parameter:
+        return os << "CFG_parameter";
+    case DcpPduType::CFG_tunable_parameter:
+        return os << "CFGtunable_parameter";
+    case DcpPduType::CFG_param_network_information:
+        return os << "CFG_param_network_information";
+    case DcpPduType::CFG_clear:
+        return os << "CFG_clear";
+    case DcpPduType::CFG_logging:
+        return os << "CFG_logging";
+    case DcpPduType::DAT_input_output:
+        return os << "DAT_input_output";
+    case DcpPduType::DAT_parameter:
+        return os << "DAT_parameter";
+    case DcpPduType::RSP_ack:
+        return os << "RSP_ack";
+    case DcpPduType::RSP_nack:
+        return os << "RSP_nack";
+    case DcpPduType::RSP_state_ack:
+        return os << "RSP_state_ack";
+    case DcpPduType::RSP_error_ack:
+        return os << "RSP_error_ack";
+    case DcpPduType::RSP_log_ack:
+        return os << "RSP_log_ack";
+    case DcpPduType::CFG_target_network_information:
+        return os << "CFG_target_network_information";
+    case DcpPduType::CFG_source_network_information:
+        return os << "CFG_source_network_information";
+    case DcpPduType::CFG_scope:
+        return os << "CFG_scope";
+    default:
+        return os << "UNKNOWN(" << (unsigned((uint8_t)type)) << ")";
     }
     return os;
 }
@@ -262,10 +261,10 @@ static std::ostream &operator<<(std::ostream &os, DcpPduType type) {
  * @param str
  * @param type
  */
-static std::string to_string(DcpPduType type) {
+static std::string to_string(DcpPduType type)
+{
     std::ostringstream oss;
     oss << type;
     return oss.str();
 }
-#endif
-#endif //DCPLIB_DCPPDUTYPE_HPP
+#endif // DCPLIB_DCPPDUTYPE_HPP

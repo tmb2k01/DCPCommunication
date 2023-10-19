@@ -32,6 +32,7 @@
 #include "fmi2.h"
 #include "sim_support.h"
 #include "FMURunner.h"
+#include "Master/MasterModel.h"
 
 FMU fmu;
 
@@ -46,6 +47,11 @@ int main(int argc, char *argv[])
     int nCategories = 0;
 
     parseArguments(argc, argv, &fmuFileName, &tEnd, &h, &loggingOn, &csv_separator, &nCategories, &categories);
+
+    /*
+    MasterModel master;
+    master.start();
+    */
 
     FMURunner runner(fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, &fmu);
     runner.RunSimulation();
