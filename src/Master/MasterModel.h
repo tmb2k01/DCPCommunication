@@ -32,8 +32,8 @@ public:
     {
         driver = new UdpDriver(HOST, PORT);
 
-        slaveDescription1 = readSlaveDescription("../models/MSD1-Slave-Description.xml");
-        slaveDescription2 = readSlaveDescription("../models/MSD2-Slave-Description.xml");
+        slaveDescription1 = readSlaveDescription("../models/Test1-Desc.xml");
+        slaveDescription2 = readSlaveDescription("../models/Test2-Desc.xml");
         manager = new DcpManagerMaster(driver->getDcpDriver());
         uint8_t netInfo1[6];
         *((uint16_t *)netInfo1) = *slaveDescription1->TransportProtocols.UDP_IPv4->Control->port;

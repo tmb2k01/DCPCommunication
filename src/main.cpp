@@ -33,28 +33,43 @@
 #include "sim_support.h"
 #include "FMURunner.h"
 #include "Master/MasterModel.h"
+#include "SlaveOne/SlaveOne.h"
+#include "SlaveTwo/SlaveTwo.h"
 
 FMU fmu;
 
 int main(int argc, char *argv[])
 {
-    const char *fmuFileName;
-    double tEnd = 1.0;
-    double h = 0.1;
-    int loggingOn = 0;
-    char csv_separator = ',';
-    char **categories = NULL;
-    int nCategories = 0;
-
-    parseArguments(argc, argv, &fmuFileName, &tEnd, &h, &loggingOn, &csv_separator, &nCategories, &categories);
-
-    /*
+#ifdef MASTER_BUILD
+    std::cout << "Master build" << std::endl;
     MasterModel master;
     master.start();
-    */
+#endif
 
-    FMURunner runner(fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, &fmu);
-    runner.RunSimulation();
+#ifdef SLAVEONE_BUILD
+    std::cout << "Slave One build" << std::endl;
+    SlaveOne slave1;
+    slave1.start();
+#endif
 
+#ifdef SLAVETWO_BUILD
+    std::cout << "Slave Two build" << std::endl;
+    SlaveTwo slave2;
+    slave2.start();
+#endif
+
+    /*
+        const char *fmuFileName;
+        double tEnd = 1.0;
+        double h = 0.1;
+        int loggingOn = 0;
+        char csv_separator = ',';
+        char **categories = NULL;
+        int nCategories = 0;
+
+        parseArguments(argc, argv, &fmuFileName, &tEnd, &h, &loggingOn, &csv_separator, &nCategories, &categories);
+
+        FMURunner runner(fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, &fmu);
+        runner.RunSimulation();*/
     return EXIT_SUCCESS;
 }
