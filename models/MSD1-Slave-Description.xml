@@ -3,9 +3,12 @@
 	<OpMode>
 		<SoftRealTime/>
 	</OpMode>
+
+
 	<TimeRes>
 		<Resolution denominator="10" />
 	</TimeRes>
+
 	<TransportProtocols>
 		<UDP_IPv4 maxPduSize="65507" >
 			<Control host="127.0.0.1" port="8081" />
@@ -16,25 +19,16 @@
 				<AvailablePortRange from="2048" to="65535" />
 			</DAT_parameter>
 		</UDP_IPv4>
+
 	</TransportProtocols>
-	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
+	<CapabilityFlags canAcceptConfigPdus="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
 	<Variables>
-		<Variable name="InInt1" valueReference="1" >
-			<Input>
-				<Int32 start="0" />
-			</Input>
-		</Variable>
-		<Variable name="InReal1" valueReference="2" >
-			<Input>
-				<Float64 start="0 " />
-			</Input>
-		</Variable>
-		<Variable name="OutInt1" valueReference="3" >
+		<Variable name="outInt" valueReference="1" >
 			<Output>
 				<Int32 start="0 " />
 			</Output>
 		</Variable>
-		<Variable name="OutReal1" valueReference="4" >
+		<Variable name="outReal" valueReference="2" >
 			<Output>
 				<Float64 start="0 " />
 			</Output>

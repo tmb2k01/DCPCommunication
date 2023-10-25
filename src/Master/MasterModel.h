@@ -1,10 +1,3 @@
-/*
- * Master.h
- *
- *  Created on: 17.12.2021
- *      Author: cschiffer
- */
-
 #ifndef MASTERMODEL_H_
 #define MASTERMODEL_H_
 
@@ -20,11 +13,6 @@
 #include <dcp/logic/DcpManagerMaster.hpp>
 #include <dcp/log/OstreamLog.hpp>
 
-/**
- * Note: This example is just for demonstration purpose of the API.
- * It uses very simple mechanisms and assumptions about the scenario to simulate,
- * which will not work out in a general master tool.
- */
 class MasterModel
 {
 public:
@@ -32,8 +20,8 @@ public:
     {
         driver = new UdpDriver(HOST, PORT);
 
-        slaveDescription1 = readSlaveDescription("../models/Test1-Desc.xml");
-        slaveDescription2 = readSlaveDescription("../models/Test2-Desc.xml");
+        slaveDescription1 = readSlaveDescription("../models/MSD1-Slave-Description.xml");
+        slaveDescription2 = readSlaveDescription("../models/MSD2-Slave-Description.xml");
         manager = new DcpManagerMaster(driver->getDcpDriver());
         uint8_t netInfo1[6];
         *((uint16_t *)netInfo1) = *slaveDescription1->TransportProtocols.UDP_IPv4->Control->port;
@@ -91,7 +79,7 @@ private:
 
     void configuration(uint8_t sender)
     {
-        std::cout << "Configure Slaves" << std::endl;
+        std::cout << "Configure Slave " << sender << std::endl;
 
         const uint16_t port1 = 60001;
         const uint16_t port2 = 60002;
@@ -104,14 +92,13 @@ private:
             // output dataId = 1, input dataId = 2
             manager->CFG_output(1, 1, 0, slaveDescription1->Variables.at(0).valueReference);
             manager->CFG_output(1, 1, 1, slaveDescription1->Variables.at(1).valueReference);
-            manager->CFG_input(1, 2, 0, slaveDescription1->Variables.at(2).valueReference, DcpDataType::float64);
 
             manager->CFG_steps(1, 1, 1);
             manager->CFG_time_res(1, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(1, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
             manager->CFG_target_network_information_UDP(1, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
-            numOfCmd[1] = 9;
+            numOfCmd[1] = 8;
         }
         if (2 == sender)
         {
@@ -120,17 +107,16 @@ private:
             manager->CFG_scope(2, 1, DcpScope::Initialization_Run_NonRealTime);
             manager->CFG_scope(2, 2, DcpScope::Initialization_Run_NonRealTime);
 
-            // inuput dataId = 1, output dataId = 2
-            manager->CFG_output(2, 2, 0, slaveDescription2->Variables.at(4).valueReference);
-            manager->CFG_input(2, 1, 0, slaveDescription2->Variables.at(2).valueReference, DcpDataType::float64);
-            manager->CFG_input(2, 1, 1, slaveDescription2->Variables.at(3).valueReference, DcpDataType::float64);
+            // input dataId = 1, output dataId = 2
+            manager->CFG_input(2, 1, 0, slaveDescription2->Variables.at(0).valueReference, DcpDataType::int32);
+            manager->CFG_input(2, 1, 1, slaveDescription2->Variables.at(1).valueReference, DcpDataType::float64);
 
             manager->CFG_steps(2, 2, 1);
             manager->CFG_time_res(2, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(2, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
             manager->CFG_target_network_information_UDP(2, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
-            numOfCmd[2] = 9;
+            numOfCmd[2] = 8;
         }
     }
 
@@ -171,7 +157,7 @@ private:
 
     void deregister(uint8_t sender)
     {
-        std::cout << "Deregister Slaves" << std::endl;
+        std::cout << "Deregister Slave " << sender << std::endl;
         std::chrono::seconds dura(1);
         std::this_thread::sleep_for(dura);
         manager->STC_deregister(sender, DcpState::STOPPED);
@@ -195,7 +181,7 @@ private:
     void receiveNAck(uint8_t sender, uint16_t pduSeqId,
                      DcpError errorCode)
     {
-        std::cerr << "Error in slave configuration." << std::endl;
+        std::cerr << "Error in " << sender << " slave configuration. Code: " << errorCode << std::endl;
         std::exit(1);
     }
 
@@ -277,4 +263,4 @@ private:
     std::shared_ptr<SlaveDescription_t> slaveDescription2;
 };
 
-#endif /* ACI_EXAMPLE_MASTER_H_ */
+#endif

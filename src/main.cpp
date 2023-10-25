@@ -32,9 +32,18 @@
 #include "fmi2.h"
 #include "sim_support.h"
 #include "FMURunner.h"
+
+#ifdef MASTER_BUILD
 #include "Master/MasterModel.h"
+#endif
+
+#ifdef SLAVEONE_BUILD
 #include "SlaveOne/SlaveOne.h"
+#endif
+
+#ifdef SLAVETWO_BUILD
 #include "SlaveTwo/SlaveTwo.h"
+#endif
 
 FMU fmu;
 
@@ -48,28 +57,15 @@ int main(int argc, char *argv[])
 
 #ifdef SLAVEONE_BUILD
     std::cout << "Slave One build" << std::endl;
-    SlaveOne slave1;
+    SlaveOne slave1{&fmu};
     slave1.start();
 #endif
 
 #ifdef SLAVETWO_BUILD
     std::cout << "Slave Two build" << std::endl;
-    SlaveTwo slave2;
+    SlaveTwo slave2{&fmu};
     slave2.start();
 #endif
 
-    /*
-        const char *fmuFileName;
-        double tEnd = 1.0;
-        double h = 0.1;
-        int loggingOn = 0;
-        char csv_separator = ',';
-        char **categories = NULL;
-        int nCategories = 0;
-
-        parseArguments(argc, argv, &fmuFileName, &tEnd, &h, &loggingOn, &csv_separator, &nCategories, &categories);
-
-        FMURunner runner(fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, &fmu);
-        runner.RunSimulation();*/
     return EXIT_SUCCESS;
 }

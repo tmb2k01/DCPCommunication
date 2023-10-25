@@ -5,16 +5,16 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(fmusim_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(MODE "None" CACHE STRING "Define the mode: Master, SlaveOne, SlaveTwo")
+set(MODE "None" CACHE STRING "Define the mode: Master, Slave_One, Slave_Two")
 
 if(MODE STREQUAL "Master")
     message(STATUS "Mode is set to Master")
     add_definitions(-DMASTER_BUILD)
-elseif(MODE STREQUAL "SlaveOne")
-    message(STATUS "Mode is set to SlaveOne")
+elseif(MODE STREQUAL "Slave_One")
+    message(STATUS "Mode is set to Slave_One")
     add_definitions(-DSLAVEONE_BUILD)
-elseif(MODE STREQUAL "SlaveTwo")
-    message(STATUS "Mode is set to SlaveTwo")
+elseif(MODE STREQUAL "Slave_Two")
+    message(STATUS "Mode is set to Slave_Two")
     add_definitions(-DSLAVETWO_BUILD)
 else()
     message(WARNING "Unknown mode or mode not set")
@@ -50,11 +50,11 @@ file(GLOB SOURCES
 
 set(fmusim_CMAKE_DEFINITIONS 
     -g
-    -Wall 
-    -Wextra
     -Wno-deprecated-declarations 
     -Wno-unused-parameter 
     -Wno-comment
+    -Wno-macro-redefined
+    -Wno-return-type
 )
 add_compile_options(${fmusim_CMAKE_DEFINITIONS})
 

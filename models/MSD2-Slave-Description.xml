@@ -19,25 +19,15 @@
 	</TransportProtocols>
 	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
 	<Variables>
-		<Variable name="InInt2" valueReference="1" >
+		<Variable name="inInt" valueReference="1" >
 			<Input>
 				<Int32 start="0" />
 			</Input>
 		</Variable>
-		<Variable name="InReal2" valueReference="2" >
+		<Variable name="inReal" valueReference="2" >
 			<Input>
-				<Float64 start="0 " />
+				<Float64 start="0" />
 			</Input>
-		</Variable>
-		<Variable name="OutInt2" valueReference="3" >
-			<Output>
-				<Int32 start="0 " />
-			</Output>
-		</Variable>
-		<Variable name="OutReal2" valueReference="4" >
-			<Output>
-				<Float64 start="0 " />
-			</Output>
 		</Variable>
 	</Variables> 
 	<Log>

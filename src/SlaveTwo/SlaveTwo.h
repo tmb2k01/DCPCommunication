@@ -14,11 +14,20 @@
 #include <stdarg.h>
 #include <thread>
 #include <cmath>
+#include "../FMURunner.h"
+
+const char *fmuFileName = "../models/Proxy.fmu";
+double tEnd = 10.0;
+double h = 1;
+int loggingOn = 0;
+char csv_separator = ',';
+char **categories = NULL;
+int nCategories = 0;
 
 class SlaveTwo
 {
 public:
-    SlaveTwo() : stdLog(std::cout)
+    SlaveTwo(FMU *fmu) : stdLog(std::cout), runner{fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, fmu}
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());
@@ -35,14 +44,14 @@ public:
         manager->setTimeResListener<SYNC>(std::bind(&SlaveTwo::setTimeRes, this,
                                                     std::placeholders::_1,
                                                     std::placeholders::_2));
+        manager->setStateChangedListener<SYNC>(
+            std::bind(&SlaveTwo::stateChanged, this, std::placeholders::_1));
 
-        // Display log messages on console
         manager->addLogListener(
             std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
         manager->setGenerateLogString(true);
 
         writeDcpSlaveDescription(getSlaveDescription(), "MSD2-Slave-Description.xml");
-        data_out_file.open("data_out_msd2.csv");
     }
 
     ~SlaveTwo()
@@ -50,7 +59,7 @@ public:
         delete manager;
         delete udpDriver;
 
-        data_out_file.close();
+        runner.CloseFile(data_out_file);
     }
 
     void configure()
@@ -58,13 +67,11 @@ public:
         simulationTime = 0;
         currentStep = 0;
 
-        Fc = manager->getOutput<float64_t *>(Fc_vr);
-        x1 = manager->getInput<float64_t *>(x1_vr);
-        v1 = manager->getInput<float64_t *>(v1_vr);
+        runner.InitializeFMU();
+        data_out_file = runner.OpenFile();
 
-        x2 = manager->getOutput<float64_t *>(x2_vr);
-        v2 = manager->getOutput<float64_t *>(v2_vr);
-        data_out_file << "time,x2,v2,Fc" << std::endl;
+        inInt = manager->getInput<int32_t *>(inInt_vr);
+        inReal = manager->getInput<float64_t *>(inReal_vr);
     }
 
     void initialize()
@@ -73,25 +80,23 @@ public:
 
     void doStep(uint64_t steps)
     {
-        float64_t timeDiff =
-            ((double)numerator) / ((double)denominator) * ((double)steps);
+        // float64_t timeDiff =
+        //    ((double)numerator) / ((double)denominator) * ((double)steps);
 
-        double h = timeDiff / 10;
-        for (int i = 0; i < 10; ++i)
-        {
-            *x2 = *x2 + (*v2) * h;
-            *v2 = *v2 + (h / param_m2) * (-*Fc - param_c2 * (*x2));
-            *Fc = param_cc * (*x2 - *x1) + param_dc * (*v2 - *v1);
-            simulationTime += h;
-        }
+        // double h = timeDiff / 10;
 
-        data_out_file << simulationTime << ",";
-        data_out_file << *x2 << ",";
-        data_out_file << *v2 << ",";
-        data_out_file << *Fc << std::endl;
-        // manager->Log(SIM_LOG, simulationTime, currentStep, *x2, *v2);
         //  simulationTime += timeDiff;
-        currentStep += steps;
+        // currentStep += steps;
+
+        runner.setIntInput((*inInt));
+        runner.setRealInput((*inReal));
+
+        runner.DoStep();
+
+        runner.getIntOutput(&outInt);
+        runner.getRealOutput(&outReal);
+
+        runner.PrintStep(data_out_file);
     }
 
     void setTimeRes(const uint32_t numerator, const uint32_t denominator)
@@ -101,6 +106,16 @@ public:
     }
 
     void start() { manager->start(); }
+
+    void stateChanged(DcpState state)
+    {
+        if (state == DcpState::ALIVE)
+        {
+            runner.CloseFile(data_out_file);
+            runner.~FMURunner();
+            std::exit(0);
+        }
+    }
 
     SlaveDescription_t getSlaveDescription()
     {
@@ -128,33 +143,14 @@ public:
         slaveDescription.CapabilityFlags.canProvideLogOnRequest = true;
         slaveDescription.CapabilityFlags.canProvideLogOnNotification = true;
 
-        std::shared_ptr<Output_t> caus_x2 = make_Output_ptr<float64_t>();
-        caus_x2->Float64->start = std::make_shared<std::vector<float64_t>>();
-        caus_x2->Float64->start->push_back(-1.0);
-        slaveDescription.Variables.push_back(make_Variable_output("x2", x2_vr, caus_x2));
-        std::shared_ptr<Output_t> caus_v2 = make_Output_ptr<float64_t>();
-        caus_v2->Float64->start = std::make_shared<std::vector<float64_t>>();
-        caus_v2->Float64->start->push_back(0.0);
-        slaveDescription.Variables.push_back(make_Variable_output("v2", v2_vr, caus_v2));
-
-        std::shared_ptr<CommonCausality_t> caus_x1 = make_CommonCausality_ptr<float64_t>();
-        caus_x1->Float64->start = std::make_shared<std::vector<float64_t>>();
-        caus_x1->Float64->start->push_back(0.0);
-        slaveDescription.Variables.push_back(make_Variable_input("x1", x1_vr, caus_x1));
-        std::shared_ptr<CommonCausality_t> caus_v1 = make_CommonCausality_ptr<float64_t>();
-        caus_v1->Float64->start = std::make_shared<std::vector<float64_t>>();
-        caus_v1->Float64->start->push_back(0.0);
-        slaveDescription.Variables.push_back(make_Variable_input("v1", v1_vr, caus_v1));
-
-        std::shared_ptr<Output_t> caus_Fc = make_Output_ptr<float64_t>();
-        caus_Fc->Float64->start = std::make_shared<std::vector<float64_t>>();
-        caus_Fc->Float64->start->push_back(0.0);
-        slaveDescription.Variables.push_back(make_Variable_output("Fc", Fc_vr, caus_Fc));
-
-        slaveDescription.Log = make_Log_ptr();
-        slaveDescription.Log->categories.push_back(make_Category(1, "DCP_SLAVE"));
-        slaveDescription.Log->templates.push_back(make_Template(
-            1, 1, (uint8_t)DcpLogLevel::LVL_INFORMATION, "[Time = %float64][step = %uint64 ] : pos = %float64, vel = %float64"));
+        std::shared_ptr<CommonCausality_t> caus_inInt = make_CommonCausality_ptr<int32_t>();
+        caus_inInt->Int32->start = std::make_shared<std::vector<int32_t>>();
+        caus_inInt->Int32->start->push_back(0);
+        slaveDescription.Variables.push_back(make_Variable_input("inInt", inInt_vr, caus_inInt));
+        std::shared_ptr<CommonCausality_t> caus_inReal = make_CommonCausality_ptr<float64_t>();
+        caus_inReal->Float64->start = std::make_shared<std::vector<float64_t>>();
+        caus_inReal->Float64->start->push_back(0.0);
+        slaveDescription.Variables.push_back(make_Variable_input("inReal", inReal_vr, caus_inReal));
 
         return slaveDescription;
     }
@@ -162,6 +158,7 @@ public:
 private:
     DcpManagerSlave *manager;
     OstreamLog stdLog;
+    FMURunner runner;
 
     UdpDriver *udpDriver;
     const char *const HOST = "127.0.0.1";
@@ -178,22 +175,15 @@ private:
         "[Time = %float64][step = %uint64 ] : pos = %float64, vel = %float64",
         {DcpDataType::float64, DcpDataType::uint64, DcpDataType::float64, DcpDataType::float64});
 
-    float64_t *x2;
-    const uint32_t x2_vr = 1;
-    float64_t *v2;
-    const uint32_t v2_vr = 2;
-    float64_t *x1;
-    const uint32_t x1_vr = 3;
-    float64_t *v1;
-    const uint32_t v1_vr = 4;
-    float64_t *Fc;
-    const uint32_t Fc_vr = 5;
-    float64_t param_c2 = 1.0;
-    float64_t param_m2 = 1.0;
-    float64_t param_cc = 1.0;
-    float64_t param_dc = 1.0;
+    int32_t *inInt;
+    const uint32_t inInt_vr = 1;
+    float64_t *inReal;
+    const uint32_t inReal_vr = 2;
 
-    std::ofstream data_out_file;
+    int32_t outInt;
+    float64_t outReal;
+
+    FILE *data_out_file;
 };
 
-#endif /* SLAVE_H_ */
+#endif

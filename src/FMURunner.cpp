@@ -14,10 +14,9 @@ FMURunner::FMURunner(const char *fmuFileName, double tEnd, double h,
 {
     loadFMU(fmuFileName);
     m_hh = m_h;
+    m_time = m_tStart;
     intVr = 0;
     realVr = 0;
-    inInt = 0;
-    inReal = 0;
 }
 
 FMURunner::~FMURunner()
@@ -27,38 +26,6 @@ FMURunner::~FMURunner()
     if (m_categories)
         free(m_categories);
     deleteUnzippedFiles();
-}
-
-int FMURunner::RunSimulation()
-{
-    if (InitializeFMU() == 0)
-    {
-        return 0;
-    }
-
-    FILE *file = OpenFile();
-    if (file == nullptr)
-    {
-        return 0;
-    }
-
-    // enter the simulation loop
-    m_time = m_tStart;
-    while (m_time < m_tEnd)
-    {
-        inInt++;
-        inReal++;
-        m_fmu->setInteger(c, &intVr, 1, &inInt);
-        m_fmu->setReal(c, &realVr, 1, &inReal);
-        if (DoStep() == 0)
-        {
-            return 0;
-        }
-        outputRow(m_fmu, c, m_time, file, m_separator, fmi2False); // output values for this step
-    }
-
-    CloseFile(file);
-    return 1;
 }
 
 int FMURunner::DoStep()
@@ -90,13 +57,18 @@ int FMURunner::DoStep()
     return 1;
 }
 
+void FMURunner::PrintStep(FILE *file)
+{
+    outputRow(m_fmu, c, m_time, file, m_separator, fmi2False);
+}
+
 int FMURunner::InitializeFMU()
 {
     fmuResourceLocation = getTempResourcesLocation();
     visible = fmi2False;
     vs = valueMissing;
-    toleranceDefined = fmi2False; // true if model description define tolerance
-    tolerance = 0;                // used in setting up the experiment
+    toleranceDefined = fmi2False;
+    tolerance = 0;
 
     md = m_fmu->modelDescription;
     guid = getAttributeValue((Element *)md, att_guid);
@@ -181,4 +153,24 @@ void FMURunner::CloseFile(FILE *file)
     printf("  steps ............ %d\n", m_nSteps);
     printf("  fixed step size .. %g\n", m_h);
     printf("CSV file '%s' written\n", RESULT_FILE);
+}
+
+void FMURunner::setIntInput(int const &i)
+{
+    m_fmu->setInteger(c, &intVr, 1, &i);
+}
+
+void FMURunner::setRealInput(double const &i)
+{
+    m_fmu->setReal(c, &realVr, 1, &i);
+}
+
+void FMURunner::getIntOutput(int *i)
+{
+    m_fmu->getInteger(c, &intVr, 1, i);
+}
+
+void FMURunner::getRealOutput(double *i)
+{
+    m_fmu->getReal(c, &realVr, 1, i);
 }

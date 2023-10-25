@@ -27,10 +27,7 @@ private:
     int m_nCategories;
 
     fmi2ValueReference intVr;
-    fmi2Integer inInt;
-
     fmi2ValueReference realVr;
-    fmi2Real inReal;
 
     char *fmuResourceLocation;
     fmi2Boolean visible;
@@ -46,19 +43,23 @@ private:
     fmi2Component c;
     fmi2Status fmi2Flag;
 
-    int InitializeFMU();
-    int DoStep();
-
-    FILE *OpenFile();
-    void CloseFile(FILE *file);
-
 public:
     FMURunner(const char *fmuFileName, double tEnd, double h,
               int logging, char csv_separator, char **categories, int nCategories, FMU *fmu);
 
     ~FMURunner();
+    int InitializeFMU();
 
-    int RunSimulation();
+    FILE *OpenFile();
+    void CloseFile(FILE *file);
+
+    int DoStep();
+    void PrintStep(FILE *file);
+
+    void setIntInput(int const &);
+    void setRealInput(double const &);
+    void getIntOutput(int *);
+    void getRealOutput(double *);
 };
 
 #endif
