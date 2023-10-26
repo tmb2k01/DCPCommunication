@@ -3,9 +3,12 @@
 	<OpMode>
 		<SoftRealTime/>
 	</OpMode>
+
+
 	<TimeRes>
-		<Resolution denominator="10" />
+		<Resolution denominator="5" />
 	</TimeRes>
+
 	<TransportProtocols>
 		<UDP_IPv4 maxPduSize="65507" >
 			<Control host="127.0.0.1" port="8082" />
@@ -16,26 +19,20 @@
 				<AvailablePortRange from="2048" to="65535" />
 			</DAT_parameter>
 		</UDP_IPv4>
+
 	</TransportProtocols>
-	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
+	<CapabilityFlags canAcceptConfigPdus="true" canHandleReset="true" canHandleVariableSteps="true" />
 	<Variables>
 		<Variable name="inInt" valueReference="1" >
 			<Input>
-				<Int32 start="0" />
+				<Int32 start="0 " />
 			</Input>
 		</Variable>
 		<Variable name="inReal" valueReference="2" >
 			<Input>
-				<Float64 start="0" />
+				<Float64 start="0 " />
 			</Input>
 		</Variable>
 	</Variables> 
-	<Log>
-		<Categories>
-			<Category id="1" name="DCP_SLAVE" />
-		</Categories>
-		<Templates>
-			<Template id="1" category="1" level="3" msg="[Time = %float64][step = %uint64 ] : OutInt = %int32, OutReal = %float64" />
-		</Templates>
-	</Log> 
+
 </dcpSlaveDescription>

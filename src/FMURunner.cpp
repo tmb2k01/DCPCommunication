@@ -1,10 +1,9 @@
 #include "FMURunner.h"
 
-FMURunner::FMURunner(const char *fmuFileName, double tEnd, double h,
-                     int logging, char csv_separator, char **categories, int nCategories, FMU *fmu)
+FMURunner::FMURunner(const char *fmuFileName, const double h,
+                     const int logging, const char csv_separator, const char **categories, const int nCategories, FMU *fmu)
     : m_fmu(fmu),
       m_fmuFileName(fmuFileName),
-      m_tEnd(tEnd),
       m_h(h),
       m_loggingOn(logging),
       m_separator(csv_separator),
@@ -28,13 +27,9 @@ FMURunner::~FMURunner()
     deleteUnzippedFiles();
 }
 
-int FMURunner::DoStep()
+int FMURunner::DoStep(double timeDiff)
 {
-    if (m_h > m_tEnd - m_time)
-    {
-        m_hh = m_tEnd - m_time;
-    }
-    fmi2Flag = m_fmu->doStep(c, m_time, m_hh, fmi2True);
+    fmi2Flag = m_fmu->doStep(c, m_time, timeDiff, fmi2True);
     if (fmi2Flag == fmi2Discard)
     {
         fmi2Boolean b;
@@ -51,7 +46,7 @@ int FMURunner::DoStep()
     }
     if (fmi2Flag != fmi2OK)
         return error("could not complete simulation of the model");
-    m_time += m_hh;
+    m_time += timeDiff;
     m_nSteps++;
 
     return 1;
@@ -97,7 +92,7 @@ int FMURunner::InitializeFMU()
         toleranceDefined = fmi2True;
     }
 
-    fmi2Flag = m_fmu->setupExperiment(c, toleranceDefined, tolerance, 0, fmi2True, m_tEnd);
+    fmi2Flag = m_fmu->setupExperiment(c, toleranceDefined, tolerance, 0, fmi2False, 0);
     if (fmi2Flag > fmi2Warning)
     {
         return error("could not initialize model; failed FMI setup experiment");
@@ -118,8 +113,8 @@ int FMURunner::InitializeFMU()
 
 FILE *FMURunner::OpenFile()
 {
-    printf("FMU Simulator: run '%s' from t=0..%g with step size h=%g, loggingOn=%d, csv separator='%c' ",
-           m_fmuFileName, m_tEnd, m_h, m_loggingOn, m_separator);
+    printf("FMU Simulator: run '%s' with step size h=%g, loggingOn=%d, csv separator='%c' ",
+           m_fmuFileName, m_h, m_loggingOn, m_separator);
     printf("log categories={ ");
     for (int i = 0; i < m_nCategories; i++)
         printf("%s ", m_categories[i]);
@@ -149,7 +144,7 @@ void FMURunner::CloseFile(FILE *file)
     fclose(file);
 
     // print simulation summary
-    printf("Simulation from %g to %g terminated successful\n", m_tStart, m_tEnd);
+    printf("Simulation terminated successful\n");
     printf("  steps ............ %d\n", m_nSteps);
     printf("  fixed step size .. %g\n", m_h);
     printf("CSV file '%s' written\n", RESULT_FILE);

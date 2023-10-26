@@ -17,17 +17,15 @@
 #include "../FMURunner.h"
 
 const char *fmuFileName = "../models/Proxy.fmu";
-double tEnd = 10.0;
-double h = 1;
-int loggingOn = 0;
-char csv_separator = ',';
-char **categories = NULL;
-int nCategories = 0;
+const int loggingOn = 0;
+const char csv_separator = ',';
+const char **categories = NULL;
+const int nCategories = 0;
 
 class SlaveTwo
 {
 public:
-    SlaveTwo(FMU *fmu) : stdLog(std::cout), runner{fmuFileName, tEnd, h, loggingOn, csv_separator, categories, nCategories, fmu}
+    SlaveTwo(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), loggingOn, csv_separator, categories, nCategories, fmu}
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());
@@ -46,10 +44,6 @@ public:
                                                     std::placeholders::_2));
         manager->setStateChangedListener<SYNC>(
             std::bind(&SlaveTwo::stateChanged, this, std::placeholders::_1));
-
-        manager->addLogListener(
-            std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
-        manager->setGenerateLogString(true);
 
         writeDcpSlaveDescription(getSlaveDescription(), "MSD2-Slave-Description.xml");
     }
@@ -80,23 +74,21 @@ public:
 
     void doStep(uint64_t steps)
     {
-        // float64_t timeDiff =
-        //    ((double)numerator) / ((double)denominator) * ((double)steps);
-
-        // double h = timeDiff / 10;
-
-        //  simulationTime += timeDiff;
-        // currentStep += steps;
+        float64_t timeDiff =
+            ((double)numerator) / ((double)denominator) * ((double)steps);
 
         runner.setIntInput((*inInt));
         runner.setRealInput((*inReal));
 
-        runner.DoStep();
+        runner.DoStep(timeDiff);
 
         runner.getIntOutput(&outInt);
         runner.getRealOutput(&outReal);
 
         runner.PrintStep(data_out_file);
+
+        simulationTime += timeDiff;
+        currentStep += steps;
     }
 
     void setTimeRes(const uint32_t numerator, const uint32_t denominator)
@@ -123,7 +115,7 @@ public:
         slaveDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
         Resolution_t resolution = make_Resolution();
         resolution.numerator = 1;
-        resolution.denominator = 10;
+        resolution.denominator = 5;
         slaveDescription.TimeRes.resolutions.push_back(resolution);
         slaveDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
         slaveDescription.TransportProtocols.UDP_IPv4->Control =
@@ -140,8 +132,8 @@ public:
         slaveDescription.CapabilityFlags.canHandleVariableSteps = true;
         slaveDescription.CapabilityFlags.canMonitorHeartbeat = false;
         slaveDescription.CapabilityFlags.canAcceptConfigPdus = true;
-        slaveDescription.CapabilityFlags.canProvideLogOnRequest = true;
-        slaveDescription.CapabilityFlags.canProvideLogOnNotification = true;
+        slaveDescription.CapabilityFlags.canProvideLogOnRequest = false;
+        slaveDescription.CapabilityFlags.canProvideLogOnNotification = false;
 
         std::shared_ptr<CommonCausality_t> caus_inInt = make_CommonCausality_ptr<int32_t>();
         caus_inInt->Int32->start = std::make_shared<std::vector<int32_t>>();
@@ -157,7 +149,6 @@ public:
 
 private:
     DcpManagerSlave *manager;
-    OstreamLog stdLog;
     FMURunner runner;
 
     UdpDriver *udpDriver;
@@ -169,11 +160,6 @@ private:
 
     double simulationTime;
     uint64_t currentStep;
-
-    const LogTemplate SIM_LOG = LogTemplate(
-        1, 1, DcpLogLevel::LVL_INFORMATION,
-        "[Time = %float64][step = %uint64 ] : pos = %float64, vel = %float64",
-        {DcpDataType::float64, DcpDataType::uint64, DcpDataType::float64, DcpDataType::float64});
 
     int32_t *inInt;
     const uint32_t inInt_vr = 1;

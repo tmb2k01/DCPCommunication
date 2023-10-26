@@ -6,7 +6,7 @@
 
 
 	<TimeRes>
-		<Resolution denominator="10" />
+		<Resolution denominator="5" />
 	</TimeRes>
 
 	<TransportProtocols>
@@ -21,7 +21,7 @@
 		</UDP_IPv4>
 
 	</TransportProtocols>
-	<CapabilityFlags canAcceptConfigPdus="true" canHandleVariableSteps="true" canProvideLogOnRequest="true" canProvideLogOnNotification="true" />
+	<CapabilityFlags canAcceptConfigPdus="true" canHandleVariableSteps="true" />
 	<Variables>
 		<Variable name="outInt" valueReference="1" >
 			<Output>
@@ -34,12 +34,5 @@
 			</Output>
 		</Variable>
 	</Variables> 
-	<Log>
-		<Categories>
-			<Category id="1" name="DCP_SLAVE" />
-		</Categories>
-		<Templates>
-			<Template id="1" category="1" level="3" msg="[Time = %float64][step = %uint64 ] : OutInt = %int32, OutReal = %float64" />
-		</Templates>
-	</Log> 
+
 </dcpSlaveDescription>

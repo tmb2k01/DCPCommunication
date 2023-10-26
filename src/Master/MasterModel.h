@@ -16,7 +16,7 @@
 class MasterModel
 {
 public:
-    MasterModel() : stdLog(std::cout)
+    MasterModel()
     {
         driver = new UdpDriver(HOST, PORT);
 
@@ -41,8 +41,6 @@ public:
         manager->setStateChangedNotificationReceivedListener<SYNC>(
             std::bind(&MasterModel::receiveStateChangedNotification, this, std::placeholders::_1,
                       std::placeholders::_2));
-        manager->addLogListener(std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
-        manager->setGenerateLogString(true);
     }
 
     ~MasterModel()
@@ -239,8 +237,6 @@ private:
     }
 
     void logAck(uint8_t sender, uint16_t pduSeqId, std::shared_ptr<std::vector<LogEntry>> entries);
-
-    OstreamLog stdLog;
 
     uint8_t maxInitRuns = 0;
     uint8_t intializationRuns = 1;

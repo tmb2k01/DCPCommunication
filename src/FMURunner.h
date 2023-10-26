@@ -23,7 +23,7 @@ private:
 
     int m_loggingOn;
     char m_separator;
-    char **m_categories;
+    const char **m_categories;
     int m_nCategories;
 
     fmi2ValueReference intVr;
@@ -44,8 +44,8 @@ private:
     fmi2Status fmi2Flag;
 
 public:
-    FMURunner(const char *fmuFileName, double tEnd, double h,
-              int logging, char csv_separator, char **categories, int nCategories, FMU *fmu);
+    FMURunner(const char *fmuFileName, const double h,
+              const int logging, const char csv_separator, const char **categories, const int nCategories, FMU *fmu);
 
     ~FMURunner();
     int InitializeFMU();
@@ -53,7 +53,7 @@ public:
     FILE *OpenFile();
     void CloseFile(FILE *file);
 
-    int DoStep();
+    int DoStep(double timeDiff);
     void PrintStep(FILE *file);
 
     void setIntInput(int const &);
