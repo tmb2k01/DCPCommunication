@@ -1,4 +1,3 @@
-
 #ifndef SLAVE_TWO_H_
 #define SLAVE_TWO_H_
 

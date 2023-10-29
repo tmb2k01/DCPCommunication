@@ -12,6 +12,7 @@ class FMURunner
 private:
     FMU *m_fmu;
     const char *m_fmuFileName;
+    char *m_tempPath;
 
     double m_time;
     double m_tStart = 0;

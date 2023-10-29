@@ -1,4 +1,4 @@
-/* ------------------------------------------------------------------------- 
+/* -------------------------------------------------------------------------
  * sim_support.h
  * Functions used by the FMU simulations fmusim_me and fmusim_cs.
  * Copyright QTronic GmbH. All rights reserved.
@@ -16,15 +16,15 @@
 #define UNZIP_CMD "unzip -o -d "
 #endif /* WINDOWS */
 
-#define XML_FILE  "modelDescription.xml"
+#define XML_FILE "modelDescription.xml"
 #define RESULT_FILE "result.csv"
 #define BUFSIZE 4096
 
 #if WINDOWS
 #ifdef _WIN64
-#define DLL_DIR   "binaries\\win64\\"
+#define DLL_DIR "binaries\\win64\\"
 #else
-#define DLL_DIR   "binaries\\win32\\"
+#define DLL_DIR "binaries\\win32\\"
 #endif
 
 #define DLL_SUFFIX ".dll"
@@ -33,16 +33,16 @@
 #if __APPLE__
 
 // Use these for platforms other than OpenModelica
-#define DLL_DIR   "binaries/darwin64/"
+#define DLL_DIR "binaries/darwin64/"
 #define DLL_SUFFIX ".dylib"
 
 #else /* __APPLE__ */
 // Linux
 #ifdef __x86_64
-#define DLL_DIR   "binaries/linux64/"
+#define DLL_DIR "binaries/linux64/"
 #else
 // It may be necessary to compile with -m32, see ../Makefile
-#define DLL_DIR   "binaries/linux32/"
+#define DLL_DIR "binaries/linux32/"
 #endif /* __x86_64 */
 #define DLL_SUFFIX ".so"
 #endif /* __APPLE__ */
@@ -60,20 +60,21 @@
 #define FMI_COSIMULATION
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void fmuLogger(fmi2Component c, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
-int unzip(const char *zipPath, const char *outPath);
-void parseArguments(int argc, char *argv[], const char **fmuFileName, double *tEnd, double *h,
-                    int *loggingOn, char *csv_separator, int *nCategories, char **logCategories[]);
-void loadFMU(const char *fmuFileName);
-int checkFmiVersion(const char *xmlPath);
-void deleteUnzippedFiles();
-void outputRow(FMU *fmu, fmi2Component c, double time, FILE* file, char separator, fmi2Boolean header);
-int error(const char *message);
-void printHelp(const char *fmusim);
-char *getTempResourcesLocation(); // caller has to free the result
+    void fmuLogger(fmi2Component c, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
+    int unzip(const char *zipPath, const char *outPath);
+    void parseArguments(int argc, char *argv[], const char **fmuFileName, double *tEnd, double *h,
+                        int *loggingOn, char *csv_separator, int *nCategories, char **logCategories[]);
+    void loadFMU(const char *fmuFileName, char **tmpPath);
+    int checkFmiVersion(const char *xmlPath);
+    void deleteUnzippedFiles(char **fmuTempPath);
+    void outputRow(FMU *fmu, fmi2Component c, double time, FILE *file, char separator, fmi2Boolean header);
+    int error(const char *message);
+    void printHelp(const char *fmusim);
+    char *getTempResourcesLocation(char *tempPath); // caller has to free the result
 
 #ifdef __cplusplus
 }

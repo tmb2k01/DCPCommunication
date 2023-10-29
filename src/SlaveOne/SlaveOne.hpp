@@ -16,6 +16,7 @@
 #include "../FMURunner.h"
 
 const char *fmuFileName = "../models/Proxy.fmu";
+const char *inputFileName = "../models/data.csv";
 const int loggingOn = 0;
 const char csv_separator = ',';
 const char **categories = NULL;
@@ -45,12 +46,44 @@ public:
             std::bind(&SlaveOne::stateChanged, this, std::placeholders::_1));
 
         writeDcpSlaveDescription(getSlaveDescription(), "MSD1-Slave-Description.xml");
+        openInputFile();
     }
 
     ~SlaveOne()
     {
         delete manager;
         delete udpDriver;
+    }
+
+    void openInputFile()
+    {
+        data.open(inputFileName);
+        if (!data.is_open())
+        {
+            std::cerr << "Failed to open the file." << std::endl;
+            std::exit(1);
+        }
+    }
+
+    void readInput()
+    {
+        std::string line;
+        if (std::getline(data, line))
+        {
+            int integerValue;
+            double realValue;
+
+            std::istringstream iss(line);
+            char comma;
+            if (!(iss >> integerValue >> comma >> realValue))
+            {
+                std::cerr << "Error reading values from line: " << line << std::endl;
+                return;
+            }
+
+            inInt = integerValue;
+            inReal = realValue;
+        }
     }
 
     void configure()
@@ -75,8 +108,9 @@ public:
         float64_t timeDiff =
             ((double)numerator) / ((double)denominator) * ((double)steps);
 
-        runner.setIntInput(++inInt);
-        runner.setRealInput(++inReal);
+        readInput();
+        runner.setIntInput(inInt);
+        runner.setRealInput(inReal);
 
         runner.DoStep(timeDiff);
 
@@ -148,6 +182,7 @@ public:
 private:
     DcpManagerSlave *manager;
     FMURunner runner;
+    std::ifstream data;
 
     UdpDriver *udpDriver;
     const char *const HOST = "127.0.0.1";
