@@ -14,8 +14,10 @@ FMURunner::FMURunner(const char *fmuFileName, const double h,
     loadFMU(fmuFileName, &m_tempPath);
     m_hh = m_h;
     m_time = m_tStart;
-    intVr = 0;
-    realVr = 0;
+    inIntVr = 0;
+    inRealVr = 0;
+    outIntVr = 1;
+    outRealVr = 1;
 }
 
 FMURunner::~FMURunner()
@@ -152,20 +154,20 @@ void FMURunner::CloseFile(FILE *file)
 
 void FMURunner::setIntInput(int const &i)
 {
-    m_fmu->setInteger(c, &intVr, 1, &i);
+    m_fmu->setInteger(c, &inIntVr, 1, &i);
 }
 
 void FMURunner::setRealInput(double const &i)
 {
-    m_fmu->setReal(c, &realVr, 1, &i);
+    m_fmu->setReal(c, &inRealVr, 1, &i);
 }
 
 void FMURunner::getIntOutput(int *i)
 {
-    m_fmu->getInteger(c, &intVr, 1, i);
+    m_fmu->getInteger(c, &outIntVr, 1, i);
 }
 
 void FMURunner::getRealOutput(double *i)
 {
-    m_fmu->getReal(c, &realVr, 1, i);
+    m_fmu->getReal(c, &outRealVr, 1, i);
 }

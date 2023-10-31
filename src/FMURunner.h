@@ -27,8 +27,10 @@ private:
     const char **m_categories;
     int m_nCategories;
 
-    fmi2ValueReference intVr;
-    fmi2ValueReference realVr;
+    fmi2ValueReference inIntVr;
+    fmi2ValueReference inRealVr;
+    fmi2ValueReference outIntVr;
+    fmi2ValueReference outRealVr;
 
     char *fmuResourceLocation;
     fmi2Boolean visible;

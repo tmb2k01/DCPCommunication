@@ -15,7 +15,7 @@
 #include <cmath>
 #include "../FMURunner.h"
 
-const char *fmuFileName = "../models/Proxy.fmu";
+const char *fmuFileName = "../models/Model2.fmu";
 const int loggingOn = 0;
 const char csv_separator = ',';
 const char **categories = NULL;
