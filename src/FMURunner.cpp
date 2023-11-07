@@ -1,14 +1,9 @@
 #include "FMURunner.h"
 
-FMURunner::FMURunner(const char *fmuFileName, const double h,
-                     const int logging, const char csv_separator, const char **categories, const int nCategories, FMU *fmu)
+FMURunner::FMURunner(const char *fmuFileName, const double h, FMU *fmu)
     : m_fmu(fmu),
       m_fmuFileName(fmuFileName),
       m_h(h),
-      m_loggingOn(logging),
-      m_separator(csv_separator),
-      m_categories(categories),
-      m_nCategories(nCategories),
       callbacks({fmuLogger, calloc, free, NULL, m_fmu})
 {
     loadFMU(fmuFileName, &m_tempPath);

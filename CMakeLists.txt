@@ -20,6 +20,7 @@ else()
     message(WARNING "Unknown mode or mode not set")
 endif()
 
+include_directories("${fmusim_SOURCE_DIR}/src")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/bluetooth")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/core")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/ethernet")
@@ -27,26 +28,30 @@ include_directories("${fmusim_SOURCE_DIR}/lib/dcp/master")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/slave")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/xml")
 include_directories("${fmusim_SOURCE_DIR}/lib/dcp/zip")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmi")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/include")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser/fmu20")
-include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser/libxml")
-include_directories("${fmusim_SOURCE_DIR}/src")
 
-file(GLOB SOURCES 
-    "src/*.cpp" 
-    "lib/dcp/*.cpp" 
-    "lib/fmilib/shared/*.c" 
-    "lib/fmilib/shared/*.cpp"
-    "lib/fmilib/shared/parser/*.c" 
-    "lib/fmilib/shared/parser/*.cpp"
-    "lib/fmilib/shared/parser/libxml/*.c" 
-    "lib/fmilib/shared/parser/libxml/*.cpp"
-    "lib/fmilib/shared/parser/fmu20/*.c" 
-    "lib/fmilib/shared/parser/fmu20/*.cpp"
-    "lib/dcp/*.hpp")
+if(NOT MODE STREQUAL "Master")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmi")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/include")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser/fmu20")
+    include_directories("${fmusim_SOURCE_DIR}/lib/fmilib/shared/parser/libxml")
+
+    file(GLOB SOURCES
+        "src/FMURunner.cpp" 
+        "lib/fmilib/shared/*.c" 
+        "lib/fmilib/shared/*.cpp"
+        "lib/fmilib/shared/parser/*.c" 
+        "lib/fmilib/shared/parser/*.cpp"
+        "lib/fmilib/shared/parser/libxml/*.c" 
+        "lib/fmilib/shared/parser/libxml/*.cpp"
+        "lib/fmilib/shared/parser/fmu20/*.c" 
+        "lib/fmilib/shared/parser/fmu20/*.cpp")
+
+endif()
+
+list(APPEND SOURCES 
+    "src/main.cpp")
 
 set(fmusim_CMAKE_DEFINITIONS 
     -g

@@ -17,15 +17,11 @@
 
 const char *fmuFileName = "../models/Model1.fmu";
 const char *inputFileName = "../models/data.csv";
-const int loggingOn = 0;
-const char csv_separator = ',';
-const char **categories = NULL;
-const int nCategories = 0;
 
 class SlaveOne
 {
 public:
-    SlaveOne(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), loggingOn, csv_separator, categories, nCategories, fmu}
+    SlaveOne(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), fmu}
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());

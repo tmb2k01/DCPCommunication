@@ -22,10 +22,10 @@ private:
     double m_hh;
     double m_h;
 
-    int m_loggingOn;
-    char m_separator;
-    const char **m_categories;
-    int m_nCategories;
+    const int m_loggingOn = 0;
+    const char m_separator = ',';
+    const char **m_categories = NULL;
+    const int m_nCategories = 0;
 
     fmi2ValueReference inIntVr;
     fmi2ValueReference inRealVr;
@@ -47,8 +47,7 @@ private:
     fmi2Status fmi2Flag;
 
 public:
-    FMURunner(const char *fmuFileName, const double h,
-              const int logging, const char csv_separator, const char **categories, const int nCategories, FMU *fmu);
+    FMURunner(const char *fmuFileName, const double h, FMU *fmu);
 
     ~FMURunner();
     int InitializeFMU();

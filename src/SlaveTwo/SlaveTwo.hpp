@@ -16,15 +16,11 @@
 #include "../FMURunner.h"
 
 const char *fmuFileName = "../models/Model2.fmu";
-const int loggingOn = 0;
-const char csv_separator = ',';
-const char **categories = NULL;
-const int nCategories = 0;
 
 class SlaveTwo
 {
 public:
-    SlaveTwo(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), loggingOn, csv_separator, categories, nCategories, fmu}
+    SlaveTwo(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), fmu}
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());
