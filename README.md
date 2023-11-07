@@ -6,11 +6,7 @@ Ezeket a következő parancsokkal lehet telepíteni:
 
 ```
 sudo apt update
-sudo apt install libxml2
-sudo apt install libxerces-c-dev
-sudo apt install g++ 
-sudo apt install make
-sudo apt install cmake
+apt-get install -y cmake make g++ libxerces-c-dev libxml2 libxml2-dev libasio-dev unzip
 ```
 
 A repository tárol egy **CMakeList.txt** fájlt, aminek a -DMODE paraméterével meghatározhatjuk hogy melyik komponenst szeretnénk telepíteni.

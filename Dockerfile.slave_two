@@ -1,0 +1,24 @@
+# Dockerfile for Master component based on Debian 11
+FROM debian:11
+
+# Install necessary packages like cmake and make
+RUN apt-get update && apt-get install -y cmake make g++ libxerces-c-dev libxml2 libxml2-dev libasio-dev unzip
+
+# Create an app directory
+WORKDIR /usr/src/app
+
+# Copy the build script into the container
+COPY build.sh .
+COPY CMakeLists.txt .
+COPY src/ src/
+COPY models/ models/
+COPY lib/ lib/
+
+# Set environment variable for the mode
+ENV MODE Slave_Two
+
+# Run the build script
+RUN chmod +x build.sh && ./build.sh
+
+# Command to run when starting the container
+CMD ["./build_slave_two/fmusim"]
