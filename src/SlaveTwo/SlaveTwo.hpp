@@ -147,7 +147,8 @@ private:
     FMURunner runner;
 
     UdpDriver *udpDriver;
-    const char *const HOST = "172.17.0.3";
+    // const char *const HOST = "127.0.0.1"; // Local
+    const char *const HOST = "172.20.0.4"; // Docker
     const int PORT = 8082;
 
     uint32_t numerator;

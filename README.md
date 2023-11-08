@@ -33,3 +33,4 @@ A **models** mappában találhatóak a futtatáshoz szükséges fájlok, modelle
 - data.cs -> SlaveOne-nak a bemenetét tartalmazó fájl.
 
 A szimulációhoz először a két Slave komponenst kell elindítani, majd utána a Master-t, ami beregisztrálja a Slave komponenseket, és elindítja a szimulációt.
+

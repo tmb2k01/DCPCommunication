@@ -181,7 +181,8 @@ private:
     std::ifstream data;
 
     UdpDriver *udpDriver;
-    const char *const HOST = "172.17.0.2";
+    // const char *const HOST = "127.0.0.1"; // Local
+    const char *const HOST = "172.20.0.3"; // Docker
     const int PORT = 8081;
 
     uint32_t numerator;

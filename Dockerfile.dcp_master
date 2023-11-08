@@ -14,7 +14,7 @@ COPY models/ models/
 COPY lib/ lib/
 
 # Run the build script
-RUN mkdir build && cd build && cmake -DMODE=Slave_One .. && make
+RUN mkdir build && cd build && cmake -DMODE=Master .. && make
 
 # Command to run when starting the container
 CMD ["/bin/sh"]

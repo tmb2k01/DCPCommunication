@@ -11,7 +11,8 @@
 
 	<TransportProtocols>
 		<UDP_IPv4 maxPduSize="65507" >
-			<Control host="127.0.0.1" port="8082" />
+			<!-- <Control host="127.0.0.1" port="8082" /> Local -->
+			<Control host="172.20.0.4" port="8082" /> <!-- Docker -->
 			<DAT_input_output host="" >
 				<AvailablePortRange from="2048" to="65535" />
 			</DAT_input_output>
