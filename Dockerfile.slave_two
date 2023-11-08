@@ -1,21 +1,14 @@
-# Dockerfile for Master component based on Debian 11
 FROM debian:11
 
-# Install necessary packages like cmake and make
 RUN apt-get update && apt-get install -y cmake make g++ libxerces-c-dev libxml2 libxml2-dev libasio-dev unzip
 
-# Create an app directory
 WORKDIR /usr/src/app
 
-# Copy the build script into the container
-COPY build.sh .
 COPY CMakeLists.txt .
 COPY src/ src/
 COPY models/ models/
 COPY lib/ lib/
 
-# Run the build script
 RUN mkdir build && cd build && cmake -DMODE=Slave_Two .. && make
 
-# Command to run when starting the container
 CMD ["/bin/sh"]

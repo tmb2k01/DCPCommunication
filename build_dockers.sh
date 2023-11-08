@@ -16,4 +16,12 @@ docker network ls | grep -qw dcp-network || docker network create dcp-network
 #docker run -it --name slave_one_container --network dcp-network slave_one_image
 #docker run -it --name slave_two_container --network dcp-network slave_two_image
 
+docker start master_container
+docker start slave_one_container
+docker start slave_two_container
+
+docker exec -it master_container /bin/sh
+docker exec -it slave_one_container /bin/sh
+docker exec -it slave_two_container /bin/sh
+
 #docker network inspect dcp-network
