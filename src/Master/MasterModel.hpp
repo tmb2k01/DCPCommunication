@@ -54,7 +54,6 @@ public:
         std::thread b(&DcpManagerMaster::start, manager);
         std::chrono::seconds dura(1);
         std::this_thread::sleep_for(dura);
-        // driver->getDcpDriver().connectToSlave(1);
         std::cout << "Register Slaves" << std::endl;
         manager->STC_register(1, DcpState::ALIVE, convertToUUID(slaveDescription1->uuid), DcpOpMode::SRT, 1, 0);
         manager->STC_register(2, DcpState::ALIVE, convertToUUID(slaveDescription2->uuid), DcpOpMode::SRT, 1, 0);
@@ -238,8 +237,8 @@ private:
 
     void logAck(uint8_t sender, uint16_t pduSeqId, std::shared_ptr<std::vector<LogEntry>> entries);
 
-    uint8_t maxInitRuns = 0;
-    uint8_t intializationRuns = 1;
+    uint8_t maxInitRuns = 1;
+    uint8_t intializationRuns = 0;
 
     std::map<dcpId_t, DcpState> curState;
 

@@ -87,15 +87,14 @@ public:
         simulationTime = 5;
         currentStep = 0;
 
-        runner.InitializeFMU();
-        data_out_file = runner.OpenFile();
-
         outInt = manager->getOutput<int32_t *>(outInt_vr);
         outReal = manager->getOutput<float64_t *>(outReal_vr);
     }
 
     void initialize()
     {
+        runner.InitializeFMU();
+        data_out_file = runner.OpenFile();
     }
 
     void doStep(uint64_t steps)
