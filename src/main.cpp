@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,21 +25,19 @@ FMU fmu;
 
 int main(int argc, char *argv[])
 {
-#ifdef MASTER_BUILD
+#if defined(MASTER_BUILD)
     std::cout << "Master build" << std::endl;
-    MasterModel master;
-    master.start();
-#endif
-
-#ifdef SLAVEONE_BUILD
+    MasterModel component;
+#elif defined(SLAVEONE_BUILD)
     std::cout << "Slave One build" << std::endl;
-    SlaveOne slave1{&fmu};
-    slave1.start();
-#endif
-
-#ifdef SLAVETWO_BUILD
+    SlaveOne component{&fmu};
+#elif defined(SLAVETWO_BUILD)
     std::cout << "Slave Two build" << std::endl;
-    SlaveTwo slave2{&fmu};
-    slave2.start();
+    SlaveTwo component{&fmu};
+#else
+    std::cerr << "Componend doesn't defined.";
+    return 1;
 #endif
+    component.start();
+    return 0;
 }

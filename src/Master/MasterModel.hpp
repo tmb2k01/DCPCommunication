@@ -246,8 +246,8 @@ private:
     bool SlavesReady[2] = {false, false};
 
     UdpDriver *driver;
-    // const char *const HOST = "127.0.0.1"; // Local
-    const char *const HOST = "172.20.0.2"; // Docker
+    const char *const HOST = "127.0.0.1"; // Local
+    // const char *const HOST = "172.20.0.2"; // Docker
     const uint16_t PORT = 8080;
 
     DcpManagerMaster *manager;
