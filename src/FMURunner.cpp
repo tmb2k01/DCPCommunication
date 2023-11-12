@@ -6,9 +6,6 @@ FMURunner::FMURunner(const char *fmuFileName, const double h, FMU *fmu)
       m_h(h),
       callbacks({fmuLogger, calloc, free, NULL, m_fmu})
 {
-    loadFMU(fmuFileName, &m_tempPath);
-    m_hh = m_h;
-    m_time = m_tStart;
     inIntVr = 0;
     inRealVr = 0;
     outIntVr = 1;
@@ -17,11 +14,7 @@ FMURunner::FMURunner(const char *fmuFileName, const double h, FMU *fmu)
 
 FMURunner::~FMURunner()
 {
-    dlclose(m_fmu->dllHandle);
-    freeModelDescription(m_fmu->modelDescription);
-    if (m_categories)
-        free(m_categories);
-    deleteUnzippedFiles(&m_tempPath);
+    DisconnectFMU();
 }
 
 int FMURunner::DoStep(double timeDiff)
@@ -56,6 +49,10 @@ void FMURunner::PrintStep(FILE *file)
 
 int FMURunner::InitializeFMU()
 {
+    m_hh = m_h;
+    m_time = m_tStart;
+    loadFMU(m_fmuFileName, &m_tempPath);
+
     fmuResourceLocation = getTempResourcesLocation(m_tempPath);
     visible = fmi2False;
     vs = valueMissing;
@@ -106,6 +103,15 @@ int FMURunner::InitializeFMU()
     }
 
     return 1;
+}
+
+void FMURunner::DisconnectFMU()
+{
+    dlclose(m_fmu->dllHandle);
+    freeModelDescription(m_fmu->modelDescription);
+    if (m_categories)
+        free(m_categories);
+    deleteUnzippedFiles(&m_tempPath);
 }
 
 FILE *FMURunner::OpenFile()

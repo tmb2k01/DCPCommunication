@@ -51,6 +51,7 @@ public:
 
     ~FMURunner();
     int InitializeFMU();
+    void DisconnectFMU();
 
     FILE *OpenFile();
     void CloseFile(FILE *file);

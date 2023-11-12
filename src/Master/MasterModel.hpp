@@ -128,8 +128,8 @@ private:
         {
             std::cout << "Run Simulation" << std::endl;
             std::time_t now = std::time(0);
-            manager->STC_run(1, currentState, now);
-            manager->STC_run(2, currentState, now);
+            manager->STC_run(1, currentState, now + 2);
+            manager->STC_run(2, currentState, now + 2);
             std::fill(SlavesReady, SlavesReady + 2, false);
         }
     }
@@ -140,7 +140,7 @@ private:
         if (std::all_of(SlavesReady, SlavesReady + 2, [](bool i)
                         { return i; }))
         {
-            std::chrono::seconds dura(secondsToSimulate);
+            std::chrono::seconds dura(secondsToSimulate + 2);
             std::this_thread::sleep_for(dura);
             std::cout << "Stop Simulation" << std::endl;
 
@@ -193,6 +193,8 @@ private:
     void receiveStateChangedNotification(uint8_t sender,
                                          DcpState state)
     {
+        std::chrono::milliseconds dura(250);
+        std::this_thread::sleep_for(dura);
         switch (state)
         {
         case DcpState::CONFIGURATION:

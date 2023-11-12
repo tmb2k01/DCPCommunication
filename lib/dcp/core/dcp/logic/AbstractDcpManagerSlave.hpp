@@ -247,7 +247,6 @@ public:
             notifyStateChange();
             dcpId = 0;
             driver.disconnect();
-            std::exit(0);
             break;
         }
         case DcpPduType::CFG_input:

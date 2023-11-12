@@ -47,8 +47,6 @@ public:
     {
         delete manager;
         delete udpDriver;
-
-        runner.CloseFile(data_out_file);
     }
 
     void configure()
@@ -98,7 +96,7 @@ public:
         if (state == DcpState::ALIVE)
         {
             runner.CloseFile(data_out_file);
-            runner.~FMURunner();
+            runner.DisconnectFMU();
             std::exit(0);
         }
     }

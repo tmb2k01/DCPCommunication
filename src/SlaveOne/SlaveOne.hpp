@@ -131,7 +131,7 @@ public:
         if (state == DcpState::ALIVE)
         {
             runner.CloseFile(data_out_file);
-            runner.~FMURunner();
+            runner.DisconnectFMU();
             std::exit(0);
         }
     }
