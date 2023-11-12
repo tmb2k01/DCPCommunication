@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Generated with ChatGPT - chat.openai.com
+
 declare -A dirs
 dirs=( ["build_master"]="Master" ["build_slave_one"]="Slave_One" ["build_slave_two"]="Slave_Two" )
 

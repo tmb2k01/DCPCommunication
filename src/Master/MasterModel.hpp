@@ -93,9 +93,8 @@ private:
             manager->CFG_steps(1, 1, 1);
             manager->CFG_time_res(1, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
-            manager->CFG_source_network_information_UDP(1, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
             manager->CFG_target_network_information_UDP(1, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
-            numOfCmd[1] = 8;
+            numOfCmd[1] = 7;
         }
         if (2 == sender)
         {
@@ -112,8 +111,7 @@ private:
             manager->CFG_time_res(2, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(2, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
-            manager->CFG_target_network_information_UDP(2, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
-            numOfCmd[2] = 8;
+            numOfCmd[2] = 7;
         }
     }
 
@@ -130,8 +128,8 @@ private:
         {
             std::cout << "Run Simulation" << std::endl;
             std::time_t now = std::time(0);
-            manager->STC_run(1, currentState, now + 2);
-            manager->STC_run(2, currentState, now + 2);
+            manager->STC_run(1, currentState, now);
+            manager->STC_run(2, currentState, now);
             std::fill(SlavesReady, SlavesReady + 2, false);
         }
     }
@@ -142,7 +140,7 @@ private:
         if (std::all_of(SlavesReady, SlavesReady + 2, [](bool i)
                         { return i; }))
         {
-            std::chrono::seconds dura(secondsToSimulate + 2);
+            std::chrono::seconds dura(secondsToSimulate);
             std::this_thread::sleep_for(dura);
             std::cout << "Stop Simulation" << std::endl;
 
@@ -195,8 +193,6 @@ private:
     void receiveStateChangedNotification(uint8_t sender,
                                          DcpState state)
     {
-        std::chrono::milliseconds dura(250);
-        // std::this_thread::sleep_for(dura);
         switch (state)
         {
         case DcpState::CONFIGURATION:
@@ -235,21 +231,17 @@ private:
         }
     }
 
-    void logAck(uint8_t sender, uint16_t pduSeqId, std::shared_ptr<std::vector<LogEntry>> entries);
-
     uint8_t maxInitRuns = 1;
     uint8_t intializationRuns = 0;
 
-    std::map<dcpId_t, DcpState> curState;
-
     bool SlavesReady[2] = {false, false};
 
+    DcpManagerMaster *manager;
     UdpDriver *driver;
+
     const char *const HOST = "127.0.0.1"; // Local
     // const char *const HOST = "172.20.0.2"; // Docker
     const uint16_t PORT = 8080;
-
-    DcpManagerMaster *manager;
 
     uint64_t secondsToSimulate = 10;
     std::map<dcpId_t, uint8_t> numOfCmd;
