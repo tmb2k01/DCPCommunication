@@ -14,14 +14,14 @@
 #include <thread>
 #include <cmath>
 #include "../FMURunner.h"
+#include "SlaveBase.hpp"
 
-const char *fmuFileName = "../models/Model1.fmu";
 const char *inputFileName = "../models/data.csv";
 
-class SlaveOne
+class SlaveOne : public SlaveBase
 {
 public:
-    SlaveOne(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), fmu}
+    SlaveOne(FMU *fmu, const char *fmuFileName) : SlaveBase(fmu, fmuFileName)
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());
@@ -40,16 +40,10 @@ public:
                                                     std::placeholders::_2));
         manager->setStateChangedListener<SYNC>(
             std::bind(&SlaveOne::stateChanged, this, std::placeholders::_1));
-
         writeDcpSlaveDescription(getSlaveDescription(), "MSD1-Slave-Description.xml");
-        openInputFile();
     }
 
-    ~SlaveOne()
-    {
-        delete manager;
-        delete udpDriver;
-    }
+    ~SlaveOne() = default;
 
     void openInputFile()
     {
@@ -82,22 +76,21 @@ public:
         }
     }
 
-    void configure()
+    void configure() override
     {
-        simulationTime = 5;
-        currentStep = 0;
+        SlaveBase::configure();
 
         outInt = manager->getOutput<int32_t *>(outInt_vr);
         outReal = manager->getOutput<float64_t *>(outReal_vr);
     }
 
-    void initialize()
+    void initialize() override
     {
-        runner.InitializeFMU();
-        data_out_file = runner.OpenFile();
+        openInputFile();
+        SlaveBase::initialize();
     }
 
-    void doStep(uint64_t steps)
+    void doStep(uint64_t steps) override
     {
 
         float64_t timeDiff =
@@ -118,25 +111,16 @@ public:
         currentStep += steps;
     }
 
-    void setTimeRes(const uint32_t numerator, const uint32_t denominator)
-    {
-        this->numerator = numerator;
-        this->denominator = denominator;
-    }
-
-    void start() { manager->start(); }
-
-    void stateChanged(DcpState state)
+    void stateChanged(DcpState state) override
     {
         if (state == DcpState::ALIVE)
         {
-            runner.CloseFile(data_out_file);
-            runner.DisconnectFMU();
-            std::exit(0);
+            data.close();
+            SlaveBase::stateChanged(state);
         }
     }
 
-    SlaveDescription_t getSlaveDescription()
+    SlaveDescription_t getSlaveDescription() override
     {
         SlaveDescription_t slaveDescription = make_SlaveDescription(1, 0, "dcpslave", "bcb912fe-5e59-11ec-bf63-0242ac130002");
         slaveDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
@@ -175,21 +159,11 @@ public:
     }
 
 private:
-    FMURunner runner;
     std::ifstream data;
-
-    DcpManagerSlave *manager;
-    UdpDriver *udpDriver;
 
     const char *const HOST = "127.0.0.1"; // Local
     // const char *const HOST = "172.20.0.3"; // Docker
     const int PORT = 8081;
-
-    uint32_t numerator;
-    uint32_t denominator;
-
-    double simulationTime;
-    uint64_t currentStep;
 
     int32_t inInt = 0;
     float64_t inReal = 0;
@@ -198,8 +172,6 @@ private:
     const uint32_t outInt_vr = 1;
     float64_t *outReal;
     const uint32_t outReal_vr = 2;
-
-    FILE *data_out_file;
 };
 
 #endif

@@ -16,11 +16,13 @@ FMU fmu;
 #endif
 
 #ifdef SLAVEONE_BUILD
-#include "SlaveOne/SlaveOne.hpp"
+#include "Slave/SlaveOne.hpp"
+const char *fmuFileName = "../models/Model1.fmu";
 #endif
 
 #ifdef SLAVETWO_BUILD
-#include "SlaveTwo/SlaveTwo.hpp"
+#include "Slave/SlaveTwo.hpp"
+const char *fmuFileName = "../models/Model2.fmu";
 #endif
 
 int main(int argc, char *argv[])
@@ -30,10 +32,10 @@ int main(int argc, char *argv[])
     MasterModel component;
 #elif defined(SLAVEONE_BUILD)
     std::cout << "Slave One build" << std::endl;
-    SlaveOne component{&fmu};
+    SlaveOne component{&fmu, fmuFileName};
 #elif defined(SLAVETWO_BUILD)
     std::cout << "Slave Two build" << std::endl;
-    SlaveTwo component{&fmu};
+    SlaveTwo component{&fmu, fmuFileName};
 #else
     std::cerr << "Component doesn't defined.";
     return 1;

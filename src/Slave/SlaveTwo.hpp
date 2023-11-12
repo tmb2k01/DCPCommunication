@@ -14,13 +14,12 @@
 #include <thread>
 #include <cmath>
 #include "../FMURunner.h"
+#include "SlaveBase.hpp"
 
-const char *fmuFileName = "../models/Model2.fmu";
-
-class SlaveTwo
+class SlaveTwo : public SlaveBase
 {
 public:
-    SlaveTwo(FMU *fmu) : runner{fmuFileName, ((double)numerator / (double)denominator), fmu}
+    SlaveTwo(FMU *fmu, const char *fmuFileName) : SlaveBase(fmu, fmuFileName)
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());
@@ -39,32 +38,20 @@ public:
                                                     std::placeholders::_2));
         manager->setStateChangedListener<SYNC>(
             std::bind(&SlaveTwo::stateChanged, this, std::placeholders::_1));
-
         writeDcpSlaveDescription(getSlaveDescription(), "MSD2-Slave-Description.xml");
     }
 
-    ~SlaveTwo()
-    {
-        delete manager;
-        delete udpDriver;
-    }
+    ~SlaveTwo() = default;
 
-    void configure()
+    void configure() override
     {
-        simulationTime = 0;
-        currentStep = 0;
+        SlaveBase::configure();
 
         inInt = manager->getInput<int32_t *>(inInt_vr);
         inReal = manager->getInput<float64_t *>(inReal_vr);
     }
 
-    void initialize()
-    {
-        runner.InitializeFMU();
-        data_out_file = runner.OpenFile();
-    }
-
-    void doStep(uint64_t steps)
+    void doStep(uint64_t steps) override
     {
         float64_t timeDiff =
             ((double)numerator) / ((double)denominator) * ((double)steps);
@@ -83,25 +70,7 @@ public:
         currentStep += steps;
     }
 
-    void setTimeRes(const uint32_t numerator, const uint32_t denominator)
-    {
-        this->numerator = numerator;
-        this->denominator = denominator;
-    }
-
-    void start() { manager->start(); }
-
-    void stateChanged(DcpState state)
-    {
-        if (state == DcpState::ALIVE)
-        {
-            runner.CloseFile(data_out_file);
-            runner.DisconnectFMU();
-            std::exit(0);
-        }
-    }
-
-    SlaveDescription_t getSlaveDescription()
+    SlaveDescription_t getSlaveDescription() override
     {
         SlaveDescription_t slaveDescription = make_SlaveDescription(1, 0, "dcpslave", "b3663a74-5e59-11ec-bf63-0242ac130003");
         slaveDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
@@ -140,19 +109,9 @@ public:
     }
 
 private:
-    DcpManagerSlave *manager;
-    UdpDriver *udpDriver;
-    FMURunner runner;
-
     const char *const HOST = "127.0.0.1"; // Local
     // const char *const HOST = "172.20.0.4"; // Docker
     const int PORT = 8082;
-
-    uint32_t numerator;
-    uint32_t denominator;
-
-    double simulationTime;
-    uint64_t currentStep;
 
     int32_t *inInt;
     const uint32_t inInt_vr = 1;
@@ -161,8 +120,6 @@ private:
 
     int32_t outInt;
     float64_t outReal;
-
-    FILE *data_out_file;
 };
 
 #endif
