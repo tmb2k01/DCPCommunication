@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     std::cout << "Slave Two build" << std::endl;
     SlaveTwo component{&fmu};
 #else
-    std::cerr << "Componend doesn't defined.";
+    std::cerr << "Component doesn't defined.";
     return 1;
 #endif
     component.start();
