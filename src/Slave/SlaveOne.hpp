@@ -105,7 +105,7 @@ public:
         runner.getIntOutput(outInt);
         runner.getRealOutput(outReal);
 
-        runner.PrintStep(data_out_file);
+        runner.PrintStep();
 
         simulationTime += timeDiff;
         currentStep += steps;

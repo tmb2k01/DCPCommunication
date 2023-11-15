@@ -14,6 +14,8 @@ private:
     const char *m_fmuFileName;
     char *m_tempPath;
 
+    FILE *data_out_file;
+
     double m_time;
     double m_tStart = 0;
     double m_tEnd;
@@ -53,11 +55,11 @@ public:
     int InitializeFMU();
     void DisconnectFMU();
 
-    FILE *OpenFile();
-    void CloseFile(FILE *file);
+    bool OpenFile();
+    void CloseFile();
 
     int DoStep(double timeDiff);
-    void PrintStep(FILE *file);
+    void PrintStep();
 
     void setIntInput(int const &);
     void setRealInput(double const &);

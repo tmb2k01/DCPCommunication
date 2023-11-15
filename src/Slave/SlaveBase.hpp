@@ -18,7 +18,7 @@
 class SlaveBase
 {
 public:
-    SlaveBase(FMU *fmu, const char *fmuFileName) : runner{fmuFileName, ((double)numerator / (double)denominator), fmu}
+    SlaveBase(FMU *fmu, const char *fmuFileName) : runner{fmuFileName, (1.0 / 5.0), fmu}
     {
     }
 
@@ -37,7 +37,7 @@ public:
     virtual void initialize()
     {
         runner.InitializeFMU();
-        data_out_file = runner.OpenFile();
+        runner.OpenFile();
     }
 
     virtual void doStep(uint64_t steps) = 0;
@@ -54,7 +54,7 @@ public:
     {
         if (state == DcpState::ALIVE)
         {
-            runner.CloseFile(data_out_file);
+            runner.CloseFile();
             runner.DisconnectFMU();
             std::exit(0);
         }
@@ -68,13 +68,11 @@ protected:
     DcpManagerSlave *manager;
     UdpDriver *udpDriver;
 
-    uint32_t numerator;
-    uint32_t denominator;
+    uint32_t numerator = 1;
+    uint32_t denominator = 5;
 
     double simulationTime;
     uint64_t currentStep;
-
-    FILE *data_out_file;
 };
 
 #endif

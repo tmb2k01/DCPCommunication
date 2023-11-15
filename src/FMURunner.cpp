@@ -42,9 +42,9 @@ int FMURunner::DoStep(double timeDiff)
     return 1;
 }
 
-void FMURunner::PrintStep(FILE *file)
+void FMURunner::PrintStep()
 {
-    outputRow(m_fmu, c, m_time, file, m_separator, fmi2False);
+    outputRow(m_fmu, c, m_time, data_out_file, m_separator, fmi2False);
 }
 
 int FMURunner::InitializeFMU()
@@ -114,7 +114,7 @@ void FMURunner::DisconnectFMU()
     deleteUnzippedFiles(&m_tempPath);
 }
 
-FILE *FMURunner::OpenFile()
+bool FMURunner::OpenFile()
 {
     printf("FMU Simulator: run '%s' with step size h=%g, loggingOn=%d, csv separator='%c' ",
            m_fmuFileName, m_h, m_loggingOn, m_separator);
@@ -123,28 +123,27 @@ FILE *FMURunner::OpenFile()
         printf("%s ", m_categories[i]);
     printf("}\n");
 
-    FILE *file;
     // open result file
-    if (!(file = fopen(RESULT_FILE, "w")))
+    if (!(data_out_file = fopen(RESULT_FILE, "w")))
     {
         printf("could not write %s because:\n", RESULT_FILE);
         printf("    %s\n", strerror(errno));
-        return nullptr; // failure
+        return false; // failure
     }
 
     // output solution for time t0
-    outputRow(m_fmu, c, m_tStart, file, m_separator, fmi2True);  // output column names
-    outputRow(m_fmu, c, m_tStart, file, m_separator, fmi2False); // output values
+    outputRow(m_fmu, c, m_tStart, data_out_file, m_separator, fmi2True);  // output column names
+    outputRow(m_fmu, c, m_tStart, data_out_file, m_separator, fmi2False); // output values
 
-    return file;
+    return true;
 }
 
-void FMURunner::CloseFile(FILE *file)
+void FMURunner::CloseFile()
 {
     // end simulation
     m_fmu->terminate(c);
     m_fmu->freeInstance(c);
-    fclose(file);
+    fclose(data_out_file);
 
     // print simulation summary
     printf("Simulation terminated successful\n");

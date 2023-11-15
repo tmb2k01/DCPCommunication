@@ -46,7 +46,7 @@ public:
     void configure() override
     {
         SlaveBase::configure();
-
+        simulationTime = 5;
         inInt = manager->getInput<int32_t *>(inInt_vr);
         inReal = manager->getInput<float64_t *>(inReal_vr);
     }
@@ -64,7 +64,7 @@ public:
         runner.getIntOutput(&outInt);
         runner.getRealOutput(&outReal);
 
-        runner.PrintStep(data_out_file);
+        runner.PrintStep();
 
         simulationTime += timeDiff;
         currentStep += steps;
