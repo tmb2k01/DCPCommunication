@@ -19,7 +19,7 @@
 class SlaveTwo : public SlaveBase
 {
 public:
-    SlaveTwo(FMU *fmu, const char *fmuFileName) : SlaveBase(fmu, fmuFileName)
+    SlaveTwo(const char *fmuFileName) : SlaveBase(fmuFileName)
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());

@@ -7,8 +7,6 @@
 #include "fmi2.h"
 #include "sim_support.h"
 #include "FMURunner.h"
-
-FMU fmu;
 #endif
 
 #ifdef MASTER_BUILD
@@ -32,10 +30,10 @@ int main(int argc, char *argv[])
     MasterModel component;
 #elif defined(SLAVEONE_BUILD)
     std::cout << "Slave One build" << std::endl;
-    SlaveOne component{&fmu, fmuFileName};
+    SlaveOne component{fmuFileName};
 #elif defined(SLAVETWO_BUILD)
     std::cout << "Slave Two build" << std::endl;
-    SlaveTwo component{&fmu, fmuFileName};
+    SlaveTwo component{fmuFileName};
 #else
     std::cerr << "Component doesn't defined.";
     return 1;

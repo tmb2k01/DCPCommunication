@@ -35,21 +35,14 @@ private:
     fmi2ValueReference outRealVr;
 
     char *fmuResourceLocation;
-    fmi2Boolean visible;
     fmi2CallbackFunctions callbacks;
-    Element *defaultExp;
-    ValueStatus vs;
-    fmi2Boolean toleranceDefined;
-    fmi2Real tolerance;
 
-    ModelDescription *md;
     const char *guid;
     const char *instanceName;
     fmi2Component c;
-    fmi2Status fmi2Flag;
 
 public:
-    FMURunner(const char *fmuFileName, const double h, FMU *fmu);
+    FMURunner(const char *fmuFileName, const double h);
 
     ~FMURunner();
     int InitializeFMU();

@@ -1,7 +1,9 @@
 #include "FMURunner.h"
 
-FMURunner::FMURunner(const char *fmuFileName, const double h, FMU *fmu)
-    : m_fmu(fmu),
+FMU fmu;
+
+FMURunner::FMURunner(const char *fmuFileName, const double h)
+    : m_fmu(&fmu),
       m_fmuFileName(fmuFileName),
       m_h(h),
       callbacks({fmuLogger, calloc, free, NULL, m_fmu})
@@ -17,54 +19,24 @@ FMURunner::~FMURunner()
     DisconnectFMU();
 }
 
-int FMURunner::DoStep(double timeDiff)
-{
-    fmi2Flag = m_fmu->doStep(c, m_time, timeDiff, fmi2True);
-    if (fmi2Flag == fmi2Discard)
-    {
-        fmi2Boolean b;
-        // check if model requests to end simulation
-        if (fmi2OK != m_fmu->getBooleanStatus(c, fmi2Terminated, &b))
-        {
-            return error("could not complete simulation of the model. getBooleanStatus return other than fmi2OK");
-        }
-        if (b == fmi2True)
-        {
-            return error("the model requested to end the simulation");
-        }
-        return error("could not complete simulation of the model");
-    }
-    if (fmi2Flag != fmi2OK)
-        return error("could not complete simulation of the model");
-    m_time += timeDiff;
-    m_nSteps++;
-
-    return 1;
-}
-
-void FMURunner::PrintStep()
-{
-    outputRow(m_fmu, c, m_time, data_out_file, m_separator, fmi2False);
-}
-
 int FMURunner::InitializeFMU()
 {
+    fmi2Status fmi2Flag;
+
     m_hh = m_h;
     m_time = m_tStart;
     loadFMU(m_fmuFileName, &m_tempPath);
 
-    fmuResourceLocation = getTempResourcesLocation(m_tempPath);
-    visible = fmi2False;
-    vs = valueMissing;
-    toleranceDefined = fmi2False;
-    tolerance = 0;
+    fmi2Boolean visible = fmi2False;
+    ValueStatus vs = valueMissing;
+    fmi2Boolean toleranceDefined = fmi2False;
+    fmi2Real tolerance = 0;
 
-    md = m_fmu->modelDescription;
+    ModelDescription *md = m_fmu->modelDescription;
     guid = getAttributeValue((Element *)md, att_guid);
     instanceName = getAttributeValue((Element *)getCoSimulation(md), att_modelIdentifier);
-    c = m_fmu->instantiate(instanceName, fmi2CoSimulation, guid, fmuResourceLocation,
+    c = m_fmu->instantiate(instanceName, fmi2CoSimulation, guid, nullptr,
                            &callbacks, visible, m_loggingOn);
-    free(fmuResourceLocation);
 
     if (!c)
         return error("could not instantiate model");
@@ -78,7 +50,7 @@ int FMURunner::InitializeFMU()
         }
     }
 
-    defaultExp = getDefaultExperiment(md);
+    Element *defaultExp = getDefaultExperiment(md);
     if (defaultExp)
         tolerance = getAttributeDouble(defaultExp, att_tolerance, &vs);
     if (vs == valueDefined)
@@ -105,8 +77,36 @@ int FMURunner::InitializeFMU()
     return 1;
 }
 
+int FMURunner::DoStep(double timeDiff)
+{
+    fmi2Status fmi2Flag = m_fmu->doStep(c, m_time, timeDiff, fmi2True);
+    if (fmi2Flag == fmi2Discard)
+    {
+        fmi2Boolean b;
+        // check if model requests to end simulation
+        if (fmi2OK != m_fmu->getBooleanStatus(c, fmi2Terminated, &b))
+        {
+            return error("could not complete simulation of the model. getBooleanStatus return other than fmi2OK");
+        }
+        if (b == fmi2True)
+        {
+            return error("the model requested to end the simulation");
+        }
+        return error("could not complete simulation of the model");
+    }
+    if (fmi2Flag != fmi2OK)
+        return error("could not complete simulation of the model");
+    m_time += timeDiff;
+    m_nSteps++;
+
+    return 1;
+}
+
 void FMURunner::DisconnectFMU()
 {
+    m_fmu->terminate(c);
+    m_fmu->freeInstance(c);
+
     dlclose(m_fmu->dllHandle);
     freeModelDescription(m_fmu->modelDescription);
     if (m_categories)
@@ -138,11 +138,13 @@ bool FMURunner::OpenFile()
     return true;
 }
 
+void FMURunner::PrintStep()
+{
+    outputRow(m_fmu, c, m_time, data_out_file, m_separator, fmi2False);
+}
+
 void FMURunner::CloseFile()
 {
-    // end simulation
-    m_fmu->terminate(c);
-    m_fmu->freeInstance(c);
     fclose(data_out_file);
 
     // print simulation summary

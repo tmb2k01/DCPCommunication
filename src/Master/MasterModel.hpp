@@ -94,7 +94,8 @@ private:
             manager->CFG_time_res(1, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_target_network_information_UDP(1, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
-            numOfCmd[1] = 7;
+            manager->CFG_source_network_information_UDP(1, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
+            numOfCmd[1] = 8;
         }
         if (2 == sender)
         {
@@ -111,7 +112,8 @@ private:
             manager->CFG_time_res(2, slaveDescription1->TimeRes.resolutions.front().numerator,
                                   slaveDescription1->TimeRes.resolutions.front().denominator);
             manager->CFG_source_network_information_UDP(2, 1, asio::ip::address_v4::from_string(*slaveDescription2->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port2);
-            numOfCmd[2] = 7;
+            manager->CFG_target_network_information_UDP(2, 2, asio::ip::address_v4::from_string(*slaveDescription1->TransportProtocols.UDP_IPv4->Control->host).to_ulong(), port1);
+            numOfCmd[2] = 8;
         }
     }
 

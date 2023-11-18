@@ -21,7 +21,7 @@ const char *inputFileName = "../models/data.csv";
 class SlaveOne : public SlaveBase
 {
 public:
-    SlaveOne(FMU *fmu, const char *fmuFileName) : SlaveBase(fmu, fmuFileName)
+    SlaveOne(const char *fmuFileName) : SlaveBase(fmuFileName)
     {
         udpDriver = new UdpDriver(HOST, PORT);
         manager = new DcpManagerSlave(getSlaveDescription(), udpDriver->getDcpDriver());

@@ -18,7 +18,7 @@
 class SlaveBase
 {
 public:
-    SlaveBase(FMU *fmu, const char *fmuFileName) : runner{fmuFileName, (1.0 / 5.0), fmu}
+    SlaveBase(const char *fmuFileName) : runner{fmuFileName, (1.0 / 5.0)}
     {
     }
 
