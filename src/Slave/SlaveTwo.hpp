@@ -39,35 +39,22 @@ public:
         manager->setStateChangedListener<SYNC>(
             std::bind(&SlaveTwo::stateChanged, this, std::placeholders::_1));
         writeDcpSlaveDescription(getSlaveDescription(), "MSD2-Slave-Description.xml");
+        outInt = new int32_t;
+        outReal = new float64_t;
     }
 
-    ~SlaveTwo() = default;
+    ~SlaveTwo()
+    {
+        delete outInt;
+        delete outReal;
+    };
 
     void configure() override
     {
         SlaveBase::configure();
-        simulationTime = 5;
+
         inInt = manager->getInput<int32_t *>(inInt_vr);
         inReal = manager->getInput<float64_t *>(inReal_vr);
-    }
-
-    void doStep(uint64_t steps) override
-    {
-        float64_t timeDiff =
-            ((double)numerator) / ((double)denominator) * ((double)steps);
-
-        runner.setIntInput((*inInt));
-        runner.setRealInput((*inReal));
-
-        runner.DoStep(timeDiff);
-
-        runner.getIntOutput(&outInt);
-        runner.getRealOutput(&outReal);
-
-        runner.PrintStep();
-
-        simulationTime += timeDiff;
-        currentStep += steps;
     }
 
     SlaveDescription_t getSlaveDescription() override
@@ -113,13 +100,8 @@ private:
     // const char *const HOST = "172.20.0.4"; // Docker
     const int PORT = 8082;
 
-    int32_t *inInt;
     const uint32_t inInt_vr = 1;
-    float64_t *inReal;
     const uint32_t inReal_vr = 2;
-
-    int32_t outInt;
-    float64_t outReal;
 };
 
 #endif

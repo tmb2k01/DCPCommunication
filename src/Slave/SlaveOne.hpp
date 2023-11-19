@@ -41,9 +41,16 @@ public:
         manager->setStateChangedListener<SYNC>(
             std::bind(&SlaveOne::stateChanged, this, std::placeholders::_1));
         writeDcpSlaveDescription(getSlaveDescription(), "MSD1-Slave-Description.xml");
+
+        inInt = new int32_t;
+        inReal = new float64_t;
     }
 
-    ~SlaveOne() = default;
+    ~SlaveOne()
+    {
+        delete inInt;
+        delete inReal;
+    };
 
     void openInputFile()
     {
@@ -71,8 +78,8 @@ public:
                 return;
             }
 
-            inInt = integerValue;
-            inReal = realValue;
+            *inInt = integerValue;
+            *inReal = realValue;
         }
     }
 
@@ -92,23 +99,8 @@ public:
 
     void doStep(uint64_t steps) override
     {
-
-        float64_t timeDiff =
-            ((double)numerator) / ((double)denominator) * ((double)steps);
-
         readInput();
-        runner.setIntInput(inInt);
-        runner.setRealInput(inReal);
-
-        runner.DoStep(timeDiff);
-
-        runner.getIntOutput(outInt);
-        runner.getRealOutput(outReal);
-
-        runner.PrintStep();
-
-        simulationTime += timeDiff;
-        currentStep += steps;
+        SlaveBase::doStep(steps);
     }
 
     void stateChanged(DcpState state) override
@@ -165,12 +157,7 @@ private:
     // const char *const HOST = "172.20.0.3"; // Docker
     const int PORT = 8081;
 
-    int32_t inInt = 0;
-    float64_t inReal = 0;
-
-    int32_t *outInt;
     const uint32_t outInt_vr = 1;
-    float64_t *outReal;
     const uint32_t outReal_vr = 2;
 };
 

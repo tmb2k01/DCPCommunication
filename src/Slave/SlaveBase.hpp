@@ -40,7 +40,24 @@ public:
         runner.OpenFile();
     }
 
-    virtual void doStep(uint64_t steps) = 0;
+    virtual void doStep(uint64_t steps)
+    {
+        float64_t timeDiff =
+            ((double)numerator) / ((double)denominator) * ((double)steps);
+
+        runner.setIntInput(inInt);
+        runner.setRealInput(inReal);
+
+        runner.DoStep(timeDiff);
+
+        runner.getIntOutput(outInt);
+        runner.getRealOutput(outReal);
+
+        runner.PrintStep();
+
+        simulationTime += timeDiff;
+        currentStep += steps;
+    };
 
     void setTimeRes(const uint32_t numerator, const uint32_t denominator)
     {
@@ -73,6 +90,11 @@ protected:
 
     double simulationTime;
     uint64_t currentStep;
+
+    int32_t *inInt;
+    float64_t *inReal;
+    int32_t *outInt;
+    float64_t *outReal;
 };
 
 #endif

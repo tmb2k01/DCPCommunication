@@ -154,14 +154,14 @@ void FMURunner::CloseFile()
     printf("CSV file '%s' written\n", RESULT_FILE);
 }
 
-void FMURunner::setIntInput(int const &i)
+void FMURunner::setIntInput(int const *i)
 {
-    m_fmu->setInteger(c, &inIntVr, 1, &i);
+    m_fmu->setInteger(c, &inIntVr, 1, i);
 }
 
-void FMURunner::setRealInput(double const &i)
+void FMURunner::setRealInput(double const *i)
 {
-    m_fmu->setReal(c, &inRealVr, 1, &i);
+    m_fmu->setReal(c, &inRealVr, 1, i);
 }
 
 void FMURunner::getIntOutput(int *i)

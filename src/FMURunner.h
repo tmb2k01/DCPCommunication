@@ -54,8 +54,8 @@ public:
     int DoStep(double timeDiff);
     void PrintStep();
 
-    void setIntInput(int const &);
-    void setRealInput(double const &);
+    void setIntInput(int const *);
+    void setRealInput(double const *);
     void getIntOutput(int *);
     void getRealOutput(double *);
 };
